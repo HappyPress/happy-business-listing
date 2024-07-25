@@ -11,7 +11,7 @@ The Happy Business Listing Plugin allows you to create a custom business listing
 HappyPress, patilswapnilv
 
 ## File Structure
-.
+
 ```
 .
 ├── happy-business-listing.php
@@ -60,41 +60,3 @@ HappyPress, patilswapnilv
   - Activation and deactivation of custom blocks for each post type and archives.
   - WhatsApp integration settings for Twilio API and WhatsApp Business API.
   - Custom permalinks for post types and archives.
-
-## File Explanations
-
-### `happy-business-listing.php`
-Main plugin file that includes all the necessary files and initializes the plugin.
-
-### `includes/custom-post-types.php`
-Defines the custom post types: Business Listings, Services and Products, and Leads.
-
-### `includes/user-and-site.php`
-Handles user creation, sub-site creation, and populates business details on the sub-site.
-
-### `includes/whatsapp-integration.php`
-Integrates with WhatsApp Business API and Twilio API to handle WhatsApp functionality.
-
-### `includes/form-shortcode.php`
-Registers a shortcode for the business registration form and handles form submission.
-
-### `includes/settings.php`
-Registers the settings page and options for the plugin.
-
-### `includes/templates.php`
-Loads custom templates for custom post types.
-
-### `includes/gutenberg-blocks.php`
-Registers custom Gutenberg blocks and enqueues block editor assets.
-
-### `assets/js/block.js`
-JavaScript file for custom Gutenberg block frontend functionality.
-
-### `assets/js/block-editor.js`
-JavaScript file for custom Gutenberg block editor functionality.
-
-### `templates/business-listing-template.php`
-Custom template for single business listing posts.
-
-### `templates/archive-business-listing-template.php`
-Custom template for the business listing archive page.
