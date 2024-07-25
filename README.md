@@ -12,25 +12,8 @@ HappyPress, patilswapnilv
 
 ## File Structure
 .
-├── happy-business-listing.php
-├── includes
-│   ├── custom-post-types.php
-│   ├── user-and-site.php
-│   ├── whatsapp-integration.php
-│   ├── form-shortcode.php
-│   ├── settings.php
-│   ├── templates.php
-│   ├── gutenberg-blocks.php
-├── assets
-│   └── js
-│       ├── block.js
-│       └── block-editor.js
-└── templates
-    ├── business-listing-template.php
-    └── archive-business-listing-template.php
-
-
-
+```
+.
 ├── happy-business-listing.php
 ├── includes
 │ ├── custom-post-types.php
@@ -39,7 +22,7 @@ HappyPress, patilswapnilv
 │ ├── form-shortcode.php
 │ ├── settings.php
 │ ├── templates.php
-│ ├── gutenberg-blocks.php
+│ └── gutenberg-blocks.php
 ├── assets
 │ └── js
 │ ├── block.js
@@ -47,7 +30,7 @@ HappyPress, patilswapnilv
 └── templates
 ├── business-listing-template.php
 └── archive-business-listing-template.php
-
+```
 
 
 ## Installation
