@@ -1,0 +1,31 @@
+.business-details {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.business-details h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #007bff;
+}
+
+.business-details p {
+    margin-bottom: 0.5rem;
+}
+
+.business-details strong {
+    font-weight: 600;
+    color: #495057;
+}
+
+.business-details a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.business-details a:hover {
+    text-decoration: underline;
+}
