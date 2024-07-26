@@ -9,6 +9,7 @@ function hbl_register_settings() {
     register_setting('hbl_options_group', 'hbl_whatsapp_business_api', 'hbl_sanitize_api_key');
     register_setting('permalink', 'hbl_single_permalink_structure', 'hbl_sanitize_permalink');
     register_setting('permalink', 'hbl_archive_permalink_structure', 'hbl_sanitize_permalink');
+    register_setting('hbl_options_group', 'hbl_enable_logging', 'hbl_sanitize_checkbox');
 }
 
 function hbl_sanitize_checkbox($input) {
@@ -42,61 +43,80 @@ add_action('admin_menu', 'hbl_register_options_page');
 add_action('admin_init', 'hbl_register_settings');
 
 function hbl_options_page() {
+    $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'general';
     ?>
     <div class="wrap hbl-settings-page">
         <h1><?php _e('Happy Business Listing Settings', 'happy-business-listing'); ?></h1>
-        <form method="post" action="options.php">
-            <?php settings_fields('hbl_options_group'); ?>
-            <div class="hbl-settings-grid">
-                <div class="hbl-settings-section">
-                    <h2><?php _e('General Settings', 'happy-business-listing'); ?></h2>
-                    <div class="hbl-setting-item">
-                        <label for="hbl_activate_search"><?php _e('Search and Filters', 'happy-business-listing'); ?></label>
-                        <label class="switch">
-                            <input type="checkbox" id="hbl_activate_search" name="hbl_activate_search" value="1" <?php checked(1, get_option('hbl_activate_search'), true); ?>>
-                            <span class="slider round"></span>
-                        </label>
-                        <?php
-                        if (get_option('hbl_activate_search') == 1 && !is_plugin_active('happy-search-and-filter/happy-search-and-filter.php')) {
-                            echo '<p class="description error">' . __('Please install and activate the Happy Search and Filter plugin.', 'happy-business-listing') . '</p>';
-                        }
-                        ?>
-                    </div>
-                    <div class="hbl-setting-item">
-                        <label for="hbl_activate_blocks"><?php _e('Activate Custom Blocks', 'happy-business-listing'); ?></label>
-                        <label class="switch">
-                            <input type="checkbox" id="hbl_activate_blocks" name="hbl_activate_blocks" value="1" <?php checked(1, get_option('hbl_activate_blocks'), true); ?>>
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
-                <div class="hbl-settings-section">
-                    <h2><?php _e('WhatsApp Integration', 'happy-business-listing'); ?></h2>
-                    <div class="hbl-setting-item">
-                        <label><?php _e('Integration Type', 'happy-business-listing'); ?></label>
-                        <div class="hbl-radio-group">
-                            <label>
-                                <input type="radio" name="hbl_whatsapp_integration" value="twilio" <?php checked('twilio', get_option('hbl_whatsapp_integration')); ?>>
-                                <?php _e('Twilio API', 'happy-business-listing'); ?>
+        <h2 class="nav-tab-wrapper">
+            <a href="?post_type=business_listing&page=hbl_settings&tab=general" class="nav-tab <?php echo $active_tab == 'general' ? 'nav-tab-active' : ''; ?>"><?php _e('General', 'happy-business-listing'); ?></a>
+            <a href="?post_type=business_listing&page=hbl_settings&tab=logs" class="nav-tab <?php echo $active_tab == 'logs' ? 'nav-tab-active' : ''; ?>"><?php _e('Logs', 'happy-business-listing'); ?></a>
+        </h2>
+        <?php if ($active_tab == 'general'): ?>
+            <form method="post" action="options.php">
+                <?php settings_fields('hbl_options_group'); ?>
+                <div class="hbl-settings-grid">
+                    <div class="hbl-settings-section">
+                        <h2><?php _e('General Settings', 'happy-business-listing'); ?></h2>
+                        <div class="hbl-setting-item">
+                            <label for="hbl_activate_search"><?php _e('Search and Filters', 'happy-business-listing'); ?></label>
+                            <label class="switch">
+                                <input type="checkbox" id="hbl_activate_search" name="hbl_activate_search" value="1" <?php checked(1, get_option('hbl_activate_search'), true); ?>>
+                                <span class="slider round"></span>
                             </label>
-                            <label>
-                                <input type="radio" name="hbl_whatsapp_integration" value="whatsapp_business" <?php checked('whatsapp_business', get_option('hbl_whatsapp_integration')); ?>>
-                                <?php _e('WhatsApp Business API', 'happy-business-listing'); ?>
+                            <?php
+                            if (get_option('hbl_activate_search') == 1 && !is_plugin_active('happy-search-and-filter/happy-search-and-filter.php')) {
+                                echo '<p class="description error">' . __('Please install and activate the Happy Search and Filter plugin.', 'happy-business-listing') . '</p>';
+                            }
+                            ?>
+                        </div>
+                        <div class="hbl-setting-item">
+                            <label for="hbl_activate_blocks"><?php _e('Activate Custom Blocks', 'happy-business-listing'); ?></label>
+                            <label class="switch">
+                                <input type="checkbox" id="hbl_activate_blocks" name="hbl_activate_blocks" value="1" <?php checked(1, get_option('hbl_activate_blocks'), true); ?>>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="hbl-setting-item">
+                            <label for="hbl_enable_logging"><?php _e('Enable Error Logging', 'happy-business-listing'); ?></label>
+                            <label class="switch">
+                                <input type="checkbox" id="hbl_enable_logging" name="hbl_enable_logging" value="1" <?php checked(1, get_option('hbl_enable_logging'), true); ?>>
+                                <span class="slider round"></span>
                             </label>
                         </div>
                     </div>
-                    <div class="hbl-setting-item">
-                        <label for="hbl_twilio_api"><?php _e('Twilio API Key', 'happy-business-listing'); ?></label>
-                        <input type="text" id="hbl_twilio_api" name="hbl_twilio_api" value="<?php echo esc_attr(get_option('hbl_twilio_api')); ?>" class="regular-text">
-                    </div>
-                    <div class="hbl-setting-item">
-                        <label for="hbl_whatsapp_business_api"><?php _e('WhatsApp Business API Key', 'happy-business-listing'); ?></label>
-                        <input type="text" id="hbl_whatsapp_business_api" name="hbl_whatsapp_business_api" value="<?php echo esc_attr(get_option('hbl_whatsapp_business_api')); ?>" class="regular-text">
+                    <div class="hbl-settings-section">
+                        <h2><?php _e('WhatsApp Integration', 'happy-business-listing'); ?></h2>
+                        <div class="hbl-setting-item">
+                            <label><?php _e('Integration Type', 'happy-business-listing'); ?></label>
+                            <div class="hbl-radio-group">
+                                <label>
+                                    <input type="radio" name="hbl_whatsapp_integration" value="twilio" <?php checked('twilio', get_option('hbl_whatsapp_integration')); ?>>
+                                    <?php _e('Twilio API', 'happy-business-listing'); ?>
+                                </label>
+                                <label>
+                                    <input type="radio" name="hbl_whatsapp_integration" value="whatsapp_business" <?php checked('whatsapp_business', get_option('hbl_whatsapp_integration')); ?>>
+                                    <?php _e('WhatsApp Business API', 'happy-business-listing'); ?>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="hbl-setting-item">
+                            <label for="hbl_twilio_api"><?php _e('Twilio API Key', 'happy-business-listing'); ?></label>
+                            <input type="text" id="hbl_twilio_api" name="hbl_twilio_api" value="<?php echo esc_attr(get_option('hbl_twilio_api')); ?>" class="regular-text">
+                        </div>
+                        <div class="hbl-setting-item">
+                            <label for="hbl_whatsapp_business_api"><?php _e('WhatsApp Business API Key', 'happy-business-listing'); ?></label>
+                            <input type="text" id="hbl_whatsapp_business_api" name="hbl_whatsapp_business_api" value="<?php echo esc_attr(get_option('hbl_whatsapp_business_api')); ?>" class="regular-text">
+                        </div>
                     </div>
                 </div>
+                <?php submit_button(__('Save Settings', 'happy-business-listing'), 'primary', 'submit', false, ['class' => 'hbl-submit-button']); ?>
+            </form>
+        <?php elseif ($active_tab == 'logs'): ?>
+            <div class="hbl-logs-section">
+                <h2><?php _e('Error Logs', 'happy-business-listing'); ?></h2>
+                <?php hbl_display_logs(); ?>
             </div>
-            <?php submit_button(__('Save Settings', 'happy-business-listing'), 'primary', 'submit', false, ['class' => 'hbl-submit-button']); ?>
-        </form>
+        <?php endif; ?>
     </div>
     <?php
     hbl_settings_styles();
@@ -130,6 +150,25 @@ function hbl_archive_permalink_structure_callback() {
     $value = get_option('hbl_archive_permalink_structure', 'businesses');
     echo '<input type="text" class="regular-text code" value="' . esc_attr($value) . '" name="hbl_archive_permalink_structure">';
     echo '<p class="description">' . __('Enter the permalink structure for the business listings archive page. Default: businesses', 'happy-business-listing') . '</p>';
+}
+
+function hbl_display_logs() {
+    if (get_option('hbl_enable_logging') != 1) {
+        echo '<p>' . __('Logging is currently disabled. Enable it in the General Settings tab to view logs.', 'happy-business-listing') . '</p>';
+        return;
+    }
+
+    $log_file = WP_CONTENT_DIR . '/hbl-error.log';
+    if (file_exists($log_file)) {
+        $logs = file_get_contents($log_file);
+        echo '<pre class="hbl-logs">' . esc_html($logs) . '</pre>';
+        echo '<form method="post">';
+        echo '<input type="hidden" name="hbl_clear_logs" value="1">';
+        submit_button(__('Clear Logs', 'happy-business-listing'), 'secondary', 'submit', false);
+        echo '</form>';
+    } else {
+        echo '<p>' . __('No errors found.', 'happy-business-listing') . '</p>';
+    }
 }
 
 function hbl_settings_styles() {
