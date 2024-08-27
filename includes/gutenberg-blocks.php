@@ -64,24 +64,43 @@ add_action('rest_api_init', function () {
 // Render business details block
 function hbl_render_business_details_block($attributes) {
     if (empty($attributes['businessId'])) {
-        return 'Please select a business.';
+        return '<p>' . __('Please select a business.', 'happy-business-listing') . '</p>';
     }
 
     $business_id = $attributes['businessId'];
     $business = get_post($business_id);
 
     if (!$business || $business->post_type !== 'business_listing') {
-        return 'Invalid business selected.';
+        return '<p>' . __('Invalid business selected.', 'happy-business-listing') . '</p>';
     }
+
+    $logo = get_the_post_thumbnail_url($business_id, 'medium');
+    $company_type = get_post_meta($business_id, 'company_type', true);
+    $location = get_post_meta($business_id, 'location', true);
+    $website = get_post_meta($business_id, 'website', true);
+    $whatsapp = get_post_meta($business_id, 'whatsapp_number', true);
 
     ob_start();
     ?>
     <div class="business-details">
-        <h2><?php echo esc_html($business->post_title); ?></h2>
-        <p><strong><?php _e('Company Type:', 'happy-business-listing'); ?></strong> <?php echo esc_html(get_post_meta($business_id, 'company_type', true)); ?></p>
-        <p><strong><?php _e('Location:', 'happy-business-listing'); ?></strong> <?php echo esc_html(get_post_meta($business_id, 'location', true)); ?></p>
-        <p><strong><?php _e('Website:', 'happy-business-listing'); ?></strong> <a href="<?php echo esc_url(get_post_meta($business_id, 'website', true)); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html(get_post_meta($business_id, 'website', true)); ?></a></p>
-        <p><strong><?php _e('WhatsApp:', 'happy-business-listing'); ?></strong> <?php echo esc_html(get_post_meta($business_id, 'whatsapp_number', true)); ?></p>
+        <?php if ($logo) : ?>
+            <img src="<?php echo esc_url($logo); ?>" alt="<?php echo esc_attr($business->post_title); ?>" class="business-logo">
+        <?php endif; ?>
+        <h2 class="business-title"><?php echo esc_html($business->post_title); ?></h2>
+        <div class="business-info">
+            <?php if ($company_type) : ?>
+                <p><strong><?php _e('Company Type:', 'happy-business-listing'); ?></strong> <?php echo esc_html($company_type); ?></p>
+            <?php endif; ?>
+            <?php if ($location) : ?>
+                <p><strong><?php _e('Location:', 'happy-business-listing'); ?></strong> <?php echo esc_html($location); ?></p>
+            <?php endif; ?>
+            <?php if ($website) : ?>
+                <p><strong><?php _e('Website:', 'happy-business-listing'); ?></strong> <a href="<?php echo esc_url($website); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html($website); ?></a></p>
+            <?php endif; ?>
+            <?php if ($whatsapp) : ?>
+                <p><strong><?php _e('WhatsApp:', 'happy-business-listing'); ?></strong> <?php echo esc_html($whatsapp); ?></p>
+            <?php endif; ?>
+        </div>
     </div>
     <?php
     return ob_get_clean();

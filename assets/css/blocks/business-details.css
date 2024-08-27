@@ -1,31 +1,48 @@
 .business-details {
     background-color: #f8f9fa;
     border: 1px solid #dee2e6;
-    border-radius: 0.25rem;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
-.business-details h2 {
-    margin-top: 0;
-    margin-bottom: 1rem;
-    color: #007bff;
+.business-logo {
+    max-width: 150px;
+    max-height: 150px;
+    object-fit: contain;
+    margin-right: 20px;
+    margin-bottom: 10px;
 }
 
-.business-details p {
-    margin-bottom: 0.5rem;
+.business-title {
+    font-size: 24px;
+    margin: 0 0 15px;
+    color: #333;
+    flex-basis: 100%;
 }
 
-.business-details strong {
+.business-info {
+    flex: 1;
+}
+
+.business-info p {
+    margin: 0 0 10px;
+    line-height: 1.5;
+}
+
+.business-info strong {
     font-weight: 600;
-    color: #495057;
+    color: #555;
 }
 
-.business-details a {
+.business-info a {
     color: #007bff;
     text-decoration: none;
 }
 
-.business-details a:hover {
+.business-info a:hover {
     text-decoration: underline;
 }
