@@ -9,10 +9,11 @@ Welcome to the Happy Business Listing plugin documentation. This documentation p
    - Custom pages and templates
    - Template site copying
 
-2. Templates (Coming Soon)
+2. [Templates](templates.md)
    - Single business listing template
    - Archive template for business listings
    - Template override system
+   - Template functions and helpers
 
 3. WhatsApp Integration (Coming Soon)
    - Twilio API integration

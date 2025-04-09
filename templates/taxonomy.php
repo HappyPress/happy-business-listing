@@ -1,20 +1,25 @@
 <?php
 /**
- * The template for displaying business listing archives
+ * The template for displaying business taxonomy archives
  *
  * @package Happy_Business_Listing
  */
 
 get_header();
+
+$term = get_queried_object();
 ?>
 
-<div class="business-listing-archive">
-    <h1 class="archive-title"><?php _e('Business Listings', 'happy-business-listing'); ?></h1>
+<div class="business-listing-archive taxonomy-archive">
+    <h1 class="archive-title"><?php echo esc_html($term->name); ?></h1>
     
-    <?php 
-    // Display filters
-    hbl_get_template_part('business-filters'); 
-    ?>
+    <?php if (!empty($term->description)) : ?>
+        <div class="term-description">
+            <?php echo wp_kses_post($term->description); ?>
+        </div>
+    <?php endif; ?>
+    
+    <?php hbl_get_template_part('business-filters'); ?>
     
     <?php if (have_posts()) : ?>
         <div class="business-grid">
