@@ -54,7 +54,14 @@ Welcome to the Happy Business Listing plugin documentation. This documentation p
    - Permalink settings
    - Sub-site creation settings
 
-10. Developer Guide (Coming Soon)
+10. [Testing](testing.md)
+    - Unit tests
+    - Integration tests
+    - End-to-end testing
+    - Test helpers
+    - Continuous integration
+
+11. Developer Guide (Coming Soon)
     - Hooks and filters
     - Helper functions
     - Custom templates
