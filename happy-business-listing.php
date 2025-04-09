@@ -88,10 +88,14 @@ class Happy_Business_Listing {
      * Include required files
      */
     private function include_files() {
+        // Helper functions (must be loaded first)
+        require_once HBL_PLUGIN_DIR . 'includes/helpers.php';
+        
         // Core functionality
         require_once HBL_PLUGIN_DIR . 'includes/custom-post-types.php';
         require_once HBL_PLUGIN_DIR . 'includes/acf-fields.php';
         require_once HBL_PLUGIN_DIR . 'includes/user-registration.php';
+        require_once HBL_PLUGIN_DIR . 'includes/site-creation.php';
         require_once HBL_PLUGIN_DIR . 'includes/whatsapp-integration.php';
         require_once HBL_PLUGIN_DIR . 'includes/form-shortcode.php';
         require_once HBL_PLUGIN_DIR . 'includes/settings.php';
