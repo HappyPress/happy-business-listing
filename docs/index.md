@@ -4,10 +4,11 @@ Welcome to the Happy Business Listing plugin documentation. This documentation p
 
 ## Table of Contents
 
-1. [Sub-site Creation](subsite-creation.md)
+1. [Sub-site Creation](subsite-creation.md) (Completed)
    - Automatic sub-site creation for businesses
    - Custom pages and templates
    - Template site copying
+   - Sub-site management
 
 2. [Templates](templates.md)
    - Single business listing template

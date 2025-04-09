@@ -1,30 +1,33 @@
-# Sub-site Creation Feature Documentation
+# Sub-site Creation Documentation
 
-The Happy Business Listing plugin includes a powerful feature for automatically creating WordPress sub-sites for each business listing in a multisite environment. This document provides detailed information about this feature, its configuration, and customization options.
+The Happy Business Listing plugin includes a powerful feature for automatically creating sub-sites for each business listing in a multisite WordPress environment. This document provides detailed information about this feature, its configuration, and customization options.
 
 ## Overview
 
-When a business listing is created, the plugin can automatically:
+The sub-site creation feature allows you to:
 
-1. Create a new sub-site for the business
-2. Set up standard pages (Home, About, Services, Contact)
-3. Configure a navigation menu
-4. Populate pages with business information
-5. Apply a custom theme (optional)
-6. Copy content from a template site (optional)
+1. Automatically create a sub-site for each business listing
+2. Customize the content of the sub-site with templates
+3. Copy content from a template site
+4. Apply a specific theme to the sub-site
+5. Set up navigation menus and widgets
 
 ## Requirements
 
-- WordPress Multisite must be enabled
-- The user creating the business listing must have sufficient permissions
-- The `hbl_enable_subsite_creation` option must be set to '1'
+To use the sub-site creation feature, you need:
+
+- WordPress in multisite mode
+- The Happy Business Listing plugin activated network-wide
+- Appropriate permissions to create sites
 
 ## Configuration
+
+You can configure the sub-site creation feature in the plugin settings under the 'Sub-sites' tab:
 
 ### Enabling Sub-site Creation
 
 1. Go to **Business Listings > Settings**
-2. Navigate to the **Sub-site Creation Settings** section
+2. Navigate to the **Sub-sites** tab
 3. Check the **Automatically create a sub-site for each business listing** option
 4. Save changes
 
