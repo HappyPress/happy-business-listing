@@ -457,9 +457,9 @@ function hbl_add_meta_boxes() {
     
     // Business Listing meta box
     add_meta_box(
-        'hbl_business_details',
+        'hbl_acf_business_details',
         'Business Details',
-        'hbl_business_details_callback',
+        'hbl_acf_business_details_callback',
         'business_listing',
         'normal',
         'default'
@@ -490,8 +490,8 @@ add_action('add_meta_boxes', 'hbl_add_meta_boxes');
 /**
  * Business details meta box callback
  */
-function hbl_business_details_callback($post) {
-    wp_nonce_field('hbl_save_business_details', 'hbl_business_details_nonce');
+function hbl_acf_business_details_callback($post) {
+    wp_nonce_field('hbl_save_acf_business_details', 'hbl_acf_business_details_nonce');
     
     $fields = array(
         'business_name' => array(
@@ -771,9 +771,9 @@ function hbl_lead_details_callback($post) {
 /**
  * Save business details meta box data
  */
-function hbl_save_business_details($post_id) {
+function hbl_save_acf_business_details($post_id) {
     // Check if we're supposed to save
-    if (!isset($_POST['hbl_business_details_nonce']) || !wp_verify_nonce($_POST['hbl_business_details_nonce'], 'hbl_save_business_details')) {
+    if (!isset($_POST['hbl_acf_business_details_nonce']) || !wp_verify_nonce($_POST['hbl_acf_business_details_nonce'], 'hbl_save_acf_business_details')) {
         return;
     }
     
@@ -809,7 +809,7 @@ function hbl_save_business_details($post_id) {
     // Save checkbox fields
     update_post_meta($post_id, 'is_featured', isset($_POST['is_featured']) ? '1' : '0');
 }
-add_action('save_post_business_listing', 'hbl_save_business_details');
+add_action('save_post_business_listing', 'hbl_save_acf_business_details');
 
 /**
  * Save service details meta box data
