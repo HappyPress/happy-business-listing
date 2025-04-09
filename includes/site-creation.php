@@ -67,8 +67,16 @@ function hbl_create_business_subsite($post_id, $user_id, $business_name, $userna
     
     if (is_wp_error($site_id)) {
         // Log error if logging is enabled
-        if (get_option('hbl_enable_logging') == 1) {
-            error_log("[HBL] Error creating sub-site for business listing #$post_id: " . $site_id->get_error_message());
+        if (hbl_security_logging_enabled()) {
+            hbl_log_security_event(
+                'Error creating sub-site for business listing',
+                'error',
+                array(
+                    'business_id' => $post_id,
+                    'user_id' => $user_id,
+                    'error' => $site_id->get_error_message()
+                )
+            );
         }
         return $site_id;
     }
@@ -90,6 +98,19 @@ function hbl_create_business_subsite($post_id, $user_id, $business_name, $userna
     // Switch back to main site
     restore_current_blog();
     
+    // Log successful site creation
+    if (hbl_security_logging_enabled()) {
+        hbl_log_security_event(
+            'Sub-site created for business listing',
+            'info',
+            array(
+                'business_id' => $post_id,
+                'user_id' => $user_id,
+                'site_id' => $site_id
+            )
+        );
+    }
+    
     // Fire action after site creation
     do_action('hbl_after_subsite_creation', $site_id, $post_id, $user_id);
     
@@ -104,11 +125,13 @@ function hbl_create_business_subsite($post_id, $user_id, $business_name, $userna
  */
 function hbl_setup_business_site($post_id, $business_name) {
     // Get business details
-    $company_type = hbl_get_field('company_type', $post_id);
-    $location = hbl_get_field('location', $post_id);
-    $website = hbl_get_field('website', $post_id);
-    $social_media = hbl_get_field('social_media', $post_id);
-    $whatsapp_number = hbl_get_field('whatsapp_number', $post_id);
+    $company_type = hbl_get_business_field('company_type', $post_id);
+    $location = hbl_get_business_field('location', $post_id);
+    $website = hbl_get_business_field('website', $post_id);
+    $social_media = hbl_get_business_field('social_media', $post_id);
+    $whatsapp_number = hbl_get_business_field('whatsapp_number', $post_id);
+    $email = hbl_get_business_field('email', $post_id);
+    $phone = hbl_get_business_field('phone', $post_id);
     
     // Get page content templates from settings
     $home_content_template = get_option('hbl_home_page_template', '');
@@ -121,6 +144,7 @@ function hbl_setup_business_site($post_id, $business_name) {
         $home_content = "
             <h1>Welcome to $business_name</h1>
             <p>We are a leading provider of quality services and products.</p>
+            <p>Explore our website to learn more about what we offer.</p>
         ";
     } else {
         $home_content = str_replace(
@@ -144,6 +168,7 @@ function hbl_setup_business_site($post_id, $business_name) {
             <h1>About $business_name</h1>
             <p>$business_name is a " . ($company_type ? esc_html($company_type) : 'company') . " based in " . ($location ? esc_html($location) : 'our location') . ".</p>
             <p>We are committed to providing excellent service to our customers.</p>
+            <p>Our mission is to deliver high-quality products and services that meet the needs of our clients.</p>
         ";
     } else {
         $about_content = str_replace(
@@ -166,6 +191,20 @@ function hbl_setup_business_site($post_id, $business_name) {
             <h1>Our Services</h1>
             <p>$business_name offers a wide range of services to meet your needs.</p>
             <p>Contact us to learn more about how we can help you.</p>
+            <div class='services-list'>
+                <div class='service-item'>
+                    <h3>Service 1</h3>
+                    <p>Description of service 1.</p>
+                </div>
+                <div class='service-item'>
+                    <h3>Service 2</h3>
+                    <p>Description of service 2.</p>
+                </div>
+                <div class='service-item'>
+                    <h3>Service 3</h3>
+                    <p>Description of service 3.</p>
+                </div>
+            </div>
         ";
     } else {
         $services_content = str_replace(
@@ -187,11 +226,20 @@ function hbl_setup_business_site($post_id, $business_name) {
         $contact_content = "
             <h1>Contact Us</h1>
             <p>Get in touch with $business_name:</p>
-            <ul>
+            <div class='contact-info'>
+                <ul>
         ";
         
         if ($location) {
             $contact_content .= "<li><strong>Location:</strong> " . esc_html($location) . "</li>";
+        }
+        
+        if ($email) {
+            $contact_content .= "<li><strong>Email:</strong> <a href='mailto:" . esc_attr($email) . "'>" . esc_html($email) . "</a></li>";
+        }
+        
+        if ($phone) {
+            $contact_content .= "<li><strong>Phone:</strong> <a href='tel:" . esc_attr(preg_replace('/[^0-9+]/', '', $phone)) . "'>" . esc_html($phone) . "</a></li>";
         }
         
         if ($website) {
@@ -207,18 +255,34 @@ function hbl_setup_business_site($post_id, $business_name) {
         }
         
         $contact_content .= "
-            </ul>
-            <p>We look forward to hearing from you!</p>
+                </ul>
+            </div>
+            <div class='contact-form'>
+                <h2>Send us a message</h2>
+                " . do_shortcode('[business_contact_form business_id=\"' . $post_id . '\"]') . "
+            </div>
         ";
     } else {
         $contact_content = str_replace(
-            array('{business_name}', '{location}', '{website}', '{social_media}', '{whatsapp_number}'),
+            array(
+                '{business_name}', 
+                '{location}', 
+                '{email}',
+                '{phone}',
+                '{website}', 
+                '{social_media}', 
+                '{whatsapp_number}',
+                '{contact_form}'
+            ),
             array(
                 $business_name, 
                 $location, 
+                $email ? '<a href="mailto:' . esc_attr($email) . '">' . esc_html($email) . '</a>' : '',
+                $phone ? '<a href="tel:' . esc_attr(preg_replace('/[^0-9+]/', '', $phone)) . '">' . esc_html($phone) . '</a>' : '',
                 $website ? '<a href="' . esc_url($website) . '" target="_blank">' . esc_html($website) . '</a>' : '',
                 $social_media,
-                $whatsapp_number ? '<a href="https://wa.me/' . esc_attr(preg_replace('/[^0-9]/', '', $whatsapp_number)) . '" target="_blank">' . esc_html($whatsapp_number) . '</a>' : ''
+                $whatsapp_number ? '<a href="https://wa.me/' . esc_attr(preg_replace('/[^0-9]/', '', $whatsapp_number)) . '" target="_blank">' . esc_html($whatsapp_number) . '</a>' : '',
+                do_shortcode('[business_contact_form business_id=\"' . $post_id . '\"]')
             ),
             $contact_content_template
         );
@@ -287,6 +351,50 @@ function hbl_setup_business_site($post_id, $business_name) {
         switch_theme($theme);
     }
     
+    // Add custom CSS for the site
+    $custom_css = "
+        /* Custom CSS for $business_name */
+        .site-title a {
+            color: #333;
+        }
+        
+        .services-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .service-item {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        
+        .contact-info {
+            margin-bottom: 30px;
+        }
+        
+        .contact-info ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .contact-info li {
+            margin-bottom: 10px;
+        }
+        
+        .contact-form {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+        }
+    ";
+    
+    // Add the custom CSS
+    wp_update_custom_css_post($custom_css);
+    
     // Fire action after site setup
     do_action('hbl_after_subsite_setup', get_current_blog_id(), $post_id);
 }
@@ -305,9 +413,13 @@ function hbl_copy_template_content($template_id, $site_id, $post_id) {
     }
     
     // Get business details for replacements
-    $business_name = hbl_get_field('business_name', $post_id);
-    $company_type = hbl_get_field('company_type', $post_id);
-    $location = hbl_get_field('location', $post_id);
+    $business_name = hbl_get_business_field('business_name', $post_id);
+    $company_type = hbl_get_business_field('company_type', $post_id);
+    $location = hbl_get_business_field('location', $post_id);
+    $email = hbl_get_business_field('email', $post_id);
+    $phone = hbl_get_business_field('phone', $post_id);
+    $website = hbl_get_business_field('website', $post_id);
+    $whatsapp_number = hbl_get_business_field('whatsapp_number', $post_id);
     
     // Switch to template site to get content
     switch_to_blog($template_id);
@@ -339,6 +451,32 @@ function hbl_copy_template_content($template_id, $site_id, $post_id) {
         $menus_data[$menu->name] = $menu_items;
     }
     
+    // Get template widgets
+    $sidebars_widgets = get_option('sidebars_widgets');
+    $widget_options = array();
+    
+    foreach ($sidebars_widgets as $sidebar => $widgets) {
+        if (is_array($widgets)) {
+            foreach ($widgets as $widget) {
+                $widget_type = preg_replace('/-[0-9]+$/', '', $widget);
+                $widget_options[$widget] = get_option('widget_' . $widget_type);
+            }
+        }
+    }
+    
+    // Get template theme mods
+    $theme_mods = get_theme_mods();
+    
+    // Get template options
+    $template_options = array(
+        'blogname' => get_option('blogname'),
+        'blogdescription' => get_option('blogdescription'),
+        'posts_per_page' => get_option('posts_per_page'),
+        'show_on_front' => get_option('show_on_front'),
+        'page_on_front' => get_option('page_on_front'),
+        'page_for_posts' => get_option('page_for_posts'),
+    );
+    
     // Switch back to main site
     restore_current_blog();
     
@@ -350,8 +488,24 @@ function hbl_copy_template_content($template_id, $site_id, $post_id) {
     foreach ($pages_data as $page_data) {
         // Replace placeholders in content
         $content = str_replace(
-            array('{business_name}', '{company_type}', '{location}'),
-            array($business_name, $company_type, $location),
+            array(
+                '{business_name}', 
+                '{company_type}', 
+                '{location}',
+                '{email}',
+                '{phone}',
+                '{website}',
+                '{whatsapp_number}'
+            ),
+            array(
+                $business_name, 
+                $company_type, 
+                $location,
+                $email,
+                $phone,
+                $website,
+                $whatsapp_number
+            ),
             $page_data['content']
         );
         
@@ -420,6 +574,26 @@ function hbl_copy_template_content($template_id, $site_id, $post_id) {
         set_theme_mod('nav_menu_locations', $locations);
     }
     
+    // Set theme mods
+    foreach ($theme_mods as $key => $value) {
+        // Skip nav_menu_locations as we've already set it
+        if ($key !== 'nav_menu_locations') {
+            set_theme_mod($key, $value);
+        }
+    }
+    
+    // Set options
+    foreach ($template_options as $key => $value) {
+        // Skip blogname as we want to use the business name
+        if ($key === 'blogname') {
+            update_option($key, $business_name);
+        } 
+        // Skip page_on_front as we've already set it
+        elseif ($key !== 'page_on_front') {
+            update_option($key, $value);
+        }
+    }
+    
     // Switch back to main site
     restore_current_blog();
 }
@@ -442,7 +616,7 @@ function hbl_register_subsite_settings() {
         'hbl_subsite_section',
         __('Sub-site Creation Settings', 'happy-business-listing'),
         'hbl_subsite_section_callback',
-        'hbl_options_group'
+        'hbl_subsite_settings'
     );
     
     // Add settings fields
@@ -450,7 +624,7 @@ function hbl_register_subsite_settings() {
         'hbl_enable_subsite_creation',
         __('Enable Sub-site Creation', 'happy-business-listing'),
         'hbl_enable_subsite_creation_callback',
-        'hbl_options_group',
+        'hbl_subsite_settings',
         'hbl_subsite_section'
     );
     
@@ -458,7 +632,7 @@ function hbl_register_subsite_settings() {
         'hbl_subsite_template',
         __('Template Site', 'happy-business-listing'),
         'hbl_subsite_template_callback',
-        'hbl_options_group',
+        'hbl_subsite_settings',
         'hbl_subsite_section'
     );
     
@@ -466,28 +640,52 @@ function hbl_register_subsite_settings() {
         'hbl_subsite_theme',
         __('Default Theme', 'happy-business-listing'),
         'hbl_subsite_theme_callback',
-        'hbl_options_group',
+        'hbl_subsite_settings',
         'hbl_subsite_section'
     );
     
     add_settings_field(
-        'hbl_page_templates',
-        __('Page Templates', 'happy-business-listing'),
-        'hbl_page_templates_callback',
-        'hbl_options_group',
+        'hbl_home_page_template',
+        __('Home Page Template', 'happy-business-listing'),
+        'hbl_home_page_template_callback',
+        'hbl_subsite_settings',
+        'hbl_subsite_section'
+    );
+    
+    add_settings_field(
+        'hbl_about_page_template',
+        __('About Page Template', 'happy-business-listing'),
+        'hbl_about_page_template_callback',
+        'hbl_subsite_settings',
+        'hbl_subsite_section'
+    );
+    
+    add_settings_field(
+        'hbl_services_page_template',
+        __('Services Page Template', 'happy-business-listing'),
+        'hbl_services_page_template_callback',
+        'hbl_subsite_settings',
+        'hbl_subsite_section'
+    );
+    
+    add_settings_field(
+        'hbl_contact_page_template',
+        __('Contact Page Template', 'happy-business-listing'),
+        'hbl_contact_page_template_callback',
+        'hbl_subsite_settings',
         'hbl_subsite_section'
     );
 }
 add_action('admin_init', 'hbl_register_subsite_settings');
 
 /**
- * Settings section callback
+ * Sub-site settings section callback
  */
 function hbl_subsite_section_callback() {
     echo '<p>' . __('Configure settings for automatic sub-site creation for business listings.', 'happy-business-listing') . '</p>';
     
     if (!is_multisite()) {
-        echo '<div class="notice notice-warning inline"><p>' . __('WordPress is not in multisite mode. Sub-site creation will be disabled.', 'happy-business-listing') . '</p></div>';
+        echo '<div class="notice notice-warning inline"><p>' . __('WordPress is not in multisite mode. Sub-site creation will not work.', 'happy-business-listing') . '</p></div>';
     }
 }
 
@@ -501,7 +699,7 @@ function hbl_enable_subsite_creation_callback() {
     echo '<label><input type="checkbox" name="hbl_enable_subsite_creation" value="1" ' . checked('1', $value, false) . ' ' . $disabled . '> ' . __('Automatically create a sub-site for each business listing', 'happy-business-listing') . '</label>';
     
     if (!is_multisite()) {
-        echo '<p class="description">' . __('This option requires WordPress multisite to be enabled.', 'happy-business-listing') . '</p>';
+        echo '<p class="description">' . __('This option requires WordPress to be in multisite mode.', 'happy-business-listing') . '</p>';
     }
 }
 
@@ -509,23 +707,23 @@ function hbl_enable_subsite_creation_callback() {
  * Template site field callback
  */
 function hbl_subsite_template_callback() {
-    $value = get_option('hbl_subsite_template', '0');
+    $value = get_option('hbl_subsite_template', 0);
     $disabled = !is_multisite() ? 'disabled' : '';
     
     echo '<select name="hbl_subsite_template" ' . $disabled . '>';
-    echo '<option value="0">' . __('None (Use default pages)', 'happy-business-listing') . '</option>';
+    echo '<option value="0">' . __('None (Create from scratch)', 'happy-business-listing') . '</option>';
     
     if (is_multisite()) {
         $sites = get_sites(array('number' => 100));
         foreach ($sites as $site) {
             $site_id = $site->blog_id;
             $site_name = get_blog_details($site_id)->blogname;
-            echo '<option value="' . esc_attr($site_id) . '" ' . selected($value, $site_id, false) . '>' . esc_html($site_name) . '</option>';
+            echo '<option value="' . esc_attr($site_id) . '" ' . selected($value, $site_id, false) . '>' . esc_html($site_name) . ' (ID: ' . $site_id . ')</option>';
         }
     }
     
     echo '</select>';
-    echo '<p class="description">' . __('Select a site to use as a template for new business sub-sites.', 'happy-business-listing') . '</p>';
+    echo '<p class="description">' . __('Select a site to use as a template for new business sites. All content, menus, and settings will be copied.', 'happy-business-listing') . '</p>';
 }
 
 /**
@@ -544,273 +742,406 @@ function hbl_subsite_theme_callback() {
     }
     
     echo '</select>';
-    echo '<p class="description">' . __('Select a theme to use for new business sub-sites.', 'happy-business-listing') . '</p>';
+    echo '<p class="description">' . __('Select a theme to use for new business sites. If not specified, the default theme will be used.', 'happy-business-listing') . '</p>';
 }
 
 /**
- * Page templates field callback
+ * Home page template field callback
  */
-function hbl_page_templates_callback() {
-    $home_template = get_option('hbl_home_page_template', '');
-    $about_template = get_option('hbl_about_page_template', '');
-    $services_template = get_option('hbl_services_page_template', '');
-    $contact_template = get_option('hbl_contact_page_template', '');
+function hbl_home_page_template_callback() {
+    $value = get_option('hbl_home_page_template', '');
     $disabled = !is_multisite() ? 'disabled' : '';
     
-    echo '<h4>' . __('Home Page Template', 'happy-business-listing') . '</h4>';
-    echo '<textarea name="hbl_home_page_template" rows="4" cols="50" class="large-text code" ' . $disabled . '>' . esc_textarea($home_template) . '</textarea>';
-    echo '<p class="description">' . __('Template for the home page. Use {business_name}, {company_type}, and {location} as placeholders.', 'happy-business-listing') . '</p>';
-    
-    echo '<h4>' . __('About Page Template', 'happy-business-listing') . '</h4>';
-    echo '<textarea name="hbl_about_page_template" rows="4" cols="50" class="large-text code" ' . $disabled . '>' . esc_textarea($about_template) . '</textarea>';
-    echo '<p class="description">' . __('Template for the about page. Use {business_name}, {company_type}, and {location} as placeholders.', 'happy-business-listing') . '</p>';
-    
-    echo '<h4>' . __('Services Page Template', 'happy-business-listing') . '</h4>';
-    echo '<textarea name="hbl_services_page_template" rows="4" cols="50" class="large-text code" ' . $disabled . '>' . esc_textarea($services_template) . '</textarea>';
-    echo '<p class="description">' . __('Template for the services page. Use {business_name}, {company_type}, and {location} as placeholders.', 'happy-business-listing') . '</p>';
-    
-    echo '<h4>' . __('Contact Page Template', 'happy-business-listing') . '</h4>';
-    echo '<textarea name="hbl_contact_page_template" rows="4" cols="50" class="large-text code" ' . $disabled . '>' . esc_textarea($contact_template) . '</textarea>';
-    echo '<p class="description">' . __('Template for the contact page. Use {business_name}, {location}, {website}, {social_media}, and {whatsapp_number} as placeholders.', 'happy-business-listing') . '</p>';
+    echo '<textarea name="hbl_home_page_template" rows="5" cols="50" class="large-text code" ' . $disabled . '>' . esc_textarea($value) . '</textarea>';
+    echo '<p class="description">' . __('Enter the template for the home page. You can use the following placeholders: {business_name}, {company_type}, {location}', 'happy-business-listing') . '</p>';
+    echo '<p class="description">' . __('If left empty, a default template will be used.', 'happy-business-listing') . '</p>';
 }
 
 /**
- * Add sub-site management metabox to business listings
+ * About page template field callback
  */
-function hbl_add_subsite_metabox() {
-    // Only add if multisite is enabled
-    if (!is_multisite()) {
+function hbl_about_page_template_callback() {
+    $value = get_option('hbl_about_page_template', '');
+    $disabled = !is_multisite() ? 'disabled' : '';
+    
+    echo '<textarea name="hbl_about_page_template" rows="5" cols="50" class="large-text code" ' . $disabled . '>' . esc_textarea($value) . '</textarea>';
+    echo '<p class="description">' . __('Enter the template for the about page. You can use the following placeholders: {business_name}, {company_type}, {location}', 'happy-business-listing') . '</p>';
+    echo '<p class="description">' . __('If left empty, a default template will be used.', 'happy-business-listing') . '</p>';
+}
+
+/**
+ * Services page template field callback
+ */
+function hbl_services_page_template_callback() {
+    $value = get_option('hbl_services_page_template', '');
+    $disabled = !is_multisite() ? 'disabled' : '';
+    
+    echo '<textarea name="hbl_services_page_template" rows="5" cols="50" class="large-text code" ' . $disabled . '>' . esc_textarea($value) . '</textarea>';
+    echo '<p class="description">' . __('Enter the template for the services page. You can use the following placeholders: {business_name}, {company_type}, {location}', 'happy-business-listing') . '</p>';
+    echo '<p class="description">' . __('If left empty, a default template will be used.', 'happy-business-listing') . '</p>';
+}
+
+/**
+ * Contact page template field callback
+ */
+function hbl_contact_page_template_callback() {
+    $value = get_option('hbl_contact_page_template', '');
+    $disabled = !is_multisite() ? 'disabled' : '';
+    
+    echo '<textarea name="hbl_contact_page_template" rows="5" cols="50" class="large-text code" ' . $disabled . '>' . esc_textarea($value) . '</textarea>';
+    echo '<p class="description">' . __('Enter the template for the contact page. You can use the following placeholders: {business_name}, {location}, {email}, {phone}, {website}, {social_media}, {whatsapp_number}, {contact_form}', 'happy-business-listing') . '</p>';
+    echo '<p class="description">' . __('If left empty, a default template will be used.', 'happy-business-listing') . '</p>';
+}
+
+/**
+ * Add sub-site tab to settings page
+ *
+ * @param array $tabs The existing tabs
+ * @return array The modified tabs
+ */
+function hbl_add_subsite_tab($tabs) {
+    $tabs['subsite'] = __('Sub-sites', 'happy-business-listing');
+    return $tabs;
+}
+add_filter('hbl_settings_tabs', 'hbl_add_subsite_tab');
+
+/**
+ * Display sub-site tab content
+ */
+function hbl_display_subsite_tab() {
+    ?>
+    <div id="hbl-subsite-tab" class="hbl-tab-content">
+        <h2><?php _e('Sub-site Creation Settings', 'happy-business-listing'); ?></h2>
+        
+        <form method="post" action="options.php">
+            <?php
+            settings_fields('hbl_options_group');
+            do_settings_sections('hbl_subsite_settings');
+            submit_button();
+            ?>
+        </form>
+        
+        <?php if (is_multisite() && get_option('hbl_enable_subsite_creation') == '1'): ?>
+            <div class="hbl-subsite-management">
+                <h3><?php _e('Manage Business Sub-sites', 'happy-business-listing'); ?></h3>
+                <?php hbl_display_business_subsites(); ?>
+            </div>
+        <?php endif; ?>
+    </div>
+    <?php
+}
+add_action('hbl_settings_tab_subsite', 'hbl_display_subsite_tab');
+
+/**
+ * Display business sub-sites
+ */
+function hbl_display_business_subsites() {
+    // Get all business listings with site IDs
+    $businesses = get_posts(array(
+        'post_type' => 'business_listing',
+        'posts_per_page' => -1,
+        'meta_query' => array(
+            array(
+                'key' => 'site_id',
+                'compare' => 'EXISTS',
+            ),
+        ),
+    ));
+    
+    if (empty($businesses)) {
+        echo '<p>' . __('No business sub-sites found.', 'happy-business-listing') . '</p>';
         return;
     }
     
-    add_meta_box(
-        'hbl_subsite_management',
-        __('Sub-site Management', 'happy-business-listing'),
-        'hbl_subsite_metabox_callback',
-        'business_listing',
-        'side',
-        'default'
-    );
-}
-add_action('add_meta_boxes', 'hbl_add_subsite_metabox');
-
-/**
- * Sub-site management metabox callback
- */
-function hbl_subsite_metabox_callback($post) {
-    // Get site ID if it exists
-    $site_id = hbl_get_field('site_id', $post->ID);
+    echo '<table class="wp-list-table widefat fixed striped">';
+    echo '<thead>';
+    echo '<tr>';
+    echo '<th>' . __('Business Name', 'happy-business-listing') . '</th>';
+    echo '<th>' . __('Site ID', 'happy-business-listing') . '</th>';
+    echo '<th>' . __('Site URL', 'happy-business-listing') . '</th>';
+    echo '<th>' . __('Actions', 'happy-business-listing') . '</th>';
+    echo '</tr>';
+    echo '</thead>';
+    echo '<tbody>';
     
-    if ($site_id) {
-        $site_url = get_site_url($site_id);
-        $site_name = get_blog_details($site_id)->blogname;
+    foreach ($businesses as $business) {
+        $site_id = hbl_get_business_field('site_id', $business->ID);
+        $site_details = get_blog_details($site_id);
         
-        echo '<p><strong>' . __('Site Name:', 'happy-business-listing') . '</strong> ' . esc_html($site_name) . '</p>';
-        echo '<p><strong>' . __('Site URL:', 'happy-business-listing') . '</strong> <a href="' . esc_url($site_url) . '" target="_blank">' . esc_url($site_url) . '</a></p>';
+        if (!$site_details) {
+            continue;
+        }
         
-        // Add admin link
-        $admin_url = get_admin_url($site_id);
-        echo '<p><a href="' . esc_url($admin_url) . '" target="_blank" class="button">' . __('Manage Site', 'happy-business-listing') . '</a></p>';
-        
-        // Add option to recreate pages
-        echo '<p><button type="button" id="hbl-recreate-pages" class="button" data-post-id="' . esc_attr($post->ID) . '" data-site-id="' . esc_attr($site_id) . '">' . __('Recreate Pages', 'happy-business-listing') . '</button></p>';
-        
-        // Add nonce for AJAX
-        wp_nonce_field('hbl_recreate_pages', 'hbl_recreate_pages_nonce');
-    } else {
-        echo '<p>' . __('No sub-site has been created for this business listing yet.', 'happy-business-listing') . '</p>';
-        
-        // Add option to create site manually
-        echo '<p><button type="button" id="hbl-create-site" class="button" data-post-id="' . esc_attr($post->ID) . '">' . __('Create Sub-site', 'happy-business-listing') . '</button></p>';
-        
-        // Add nonce for AJAX
-        wp_nonce_field('hbl_create_site', 'hbl_create_site_nonce');
+        echo '<tr>';
+        echo '<td><a href="' . get_edit_post_link($business->ID) . '">' . esc_html($business->post_title) . '</a></td>';
+        echo '<td>' . esc_html($site_id) . '</td>';
+        echo '<td><a href="' . esc_url($site_details->siteurl) . '" target="_blank">' . esc_html($site_details->siteurl) . '</a></td>';
+        echo '<td>';
+        echo '<a href="' . esc_url(get_admin_url($site_id)) . '" target="_blank" class="button button-small">' . __('Dashboard', 'happy-business-listing') . '</a> ';
+        echo '<a href="' . esc_url(add_query_arg(array('action' => 'rebuild_site', 'business_id' => $business->ID, 'nonce' => wp_create_nonce('rebuild_site')), admin_url('admin.php?page=hbl_settings&tab=subsite'))) . '" class="button button-small">' . __('Rebuild', 'happy-business-listing') . '</a>';
+        echo '</td>';
+        echo '</tr>';
     }
     
-    // Add JavaScript for AJAX
-    ?>
-    <script type="text/javascript">
-    jQuery(document).ready(function($) {
-        // Create site button
-        $('#hbl-create-site').on('click', function() {
-            var postId = $(this).data('post-id');
-            var nonce = $('#hbl_create_site_nonce').val();
-            
-            $(this).prop('disabled', true).text('<?php _e('Creating...', 'happy-business-listing'); ?>');
-            
-            $.ajax({
-                url: ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'hbl_create_site_manually',
-                    post_id: postId,
-                    nonce: nonce
-                },
-                success: function(response) {
-                    if (response.success) {
-                        alert('<?php _e('Sub-site created successfully!', 'happy-business-listing'); ?>');
-                        location.reload();
-                    } else {
-                        alert(response.data.message || '<?php _e('Error creating sub-site.', 'happy-business-listing'); ?>');
-                        $('#hbl-create-site').prop('disabled', false).text('<?php _e('Create Sub-site', 'happy-business-listing'); ?>');
-                    }
-                },
-                error: function() {
-                    alert('<?php _e('Error creating sub-site.', 'happy-business-listing'); ?>');
-                    $('#hbl-create-site').prop('disabled', false).text('<?php _e('Create Sub-site', 'happy-business-listing'); ?>');
-                }
-            });
-        });
-        
-        // Recreate pages button
-        $('#hbl-recreate-pages').on('click', function() {
-            var postId = $(this).data('post-id');
-            var siteId = $(this).data('site-id');
-            var nonce = $('#hbl_recreate_pages_nonce').val();
-            
-            $(this).prop('disabled', true).text('<?php _e('Recreating...', 'happy-business-listing'); ?>');
-            
-            $.ajax({
-                url: ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'hbl_recreate_pages',
-                    post_id: postId,
-                    site_id: siteId,
-                    nonce: nonce
-                },
-                success: function(response) {
-                    if (response.success) {
-                        alert('<?php _e('Pages recreated successfully!', 'happy-business-listing'); ?>');
-                    } else {
-                        alert(response.data.message || '<?php _e('Error recreating pages.', 'happy-business-listing'); ?>');
-                    }
-                    $('#hbl-recreate-pages').prop('disabled', false).text('<?php _e('Recreate Pages', 'happy-business-listing'); ?>');
-                },
-                error: function() {
-                    alert('<?php _e('Error recreating pages.', 'happy-business-listing'); ?>');
-                    $('#hbl-recreate-pages').prop('disabled', false).text('<?php _e('Recreate Pages', 'happy-business-listing'); ?>');
-                }
-            });
-        });
-    });
-    </script>
-    <?php
+    echo '</tbody>';
+    echo '</table>';
 }
 
 /**
- * AJAX handler for creating a site manually
+ * Handle sub-site actions
  */
-function hbl_ajax_create_site_manually() {
-    // Check nonce
-    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'hbl_create_site')) {
-        wp_send_json_error(array('message' => __('Security check failed.', 'happy-business-listing')));
+function hbl_handle_subsite_actions() {
+    if (!isset($_GET['action']) || !isset($_GET['business_id']) || !isset($_GET['nonce'])) {
+        return;
     }
     
-    // Check permissions
-    if (!current_user_can('manage_options')) {
-        wp_send_json_error(array('message' => __('You do not have permission to do this.', 'happy-business-listing')));
+    if (!wp_verify_nonce($_GET['nonce'], 'rebuild_site')) {
+        wp_die(__('Security check failed.', 'happy-business-listing'));
     }
     
-    // Check post ID
-    if (!isset($_POST['post_id']) || !get_post($_POST['post_id'])) {
-        wp_send_json_error(array('message' => __('Invalid business listing.', 'happy-business-listing')));
+    $action = $_GET['action'];
+    $business_id = intval($_GET['business_id']);
+    
+    if ($action === 'rebuild_site') {
+        // Get business details
+        $business = get_post($business_id);
+        if (!$business || $business->post_type !== 'business_listing') {
+            wp_die(__('Invalid business listing.', 'happy-business-listing'));
+        }
+        
+        $site_id = hbl_get_business_field('site_id', $business_id);
+        if (!$site_id) {
+            wp_die(__('No site ID found for this business.', 'happy-business-listing'));
+        }
+        
+        $business_name = hbl_get_business_field('business_name', $business_id);
+        if (empty($business_name)) {
+            $business_name = $business->post_title;
+        }
+        
+        // Switch to the site
+        switch_to_blog($site_id);
+        
+        // Set up the site again
+        hbl_setup_business_site($business_id, $business_name);
+        
+        // Copy template content if a template site is specified
+        $template_id = get_option('hbl_subsite_template', 0);
+        if ($template_id > 0) {
+            hbl_copy_template_content($template_id, $site_id, $business_id);
+        }
+        
+        // Switch back to main site
+        restore_current_blog();
+        
+        // Redirect back to the settings page
+        wp_redirect(admin_url('admin.php?page=hbl_settings&tab=subsite&rebuilt=1'));
+        exit;
     }
-    
-    $post_id = intval($_POST['post_id']);
-    $post = get_post($post_id);
-    
-    // Verify it's a business listing
-    if ($post->post_type !== 'business_listing') {
-        wp_send_json_error(array('message' => __('Invalid business listing type.', 'happy-business-listing')));
-    }
-    
-    // Get business details
-    $business_name = hbl_get_field('business_name', $post_id);
-    if (empty($business_name)) {
-        $business_name = $post->post_title;
-    }
-    
-    // Get user ID
-    $user_id = hbl_get_field('user_id', $post_id);
-    if (empty($user_id)) {
-        $user_id = $post->post_author;
-    }
-    
-    // Generate username from business name
-    $username = sanitize_user(strtolower(str_replace(' ', '_', $business_name)));
-    $username = preg_replace('/[^a-z0-9_]/', '', $username);
-    
-    // Make sure username is unique
-    $original_username = $username;
-    $counter = 1;
-    while (username_exists($username)) {
-        $username = $original_username . $counter;
-        $counter++;
-    }
-    
-    // Create the sub-site
-    $site_id = hbl_create_business_subsite($post_id, $user_id, $business_name, $username);
-    
-    if (is_wp_error($site_id)) {
-        wp_send_json_error(array('message' => $site_id->get_error_message()));
-    }
-    
-    wp_send_json_success(array('site_id' => $site_id));
 }
-add_action('wp_ajax_hbl_create_site_manually', 'hbl_ajax_create_site_manually');
+add_action('admin_init', 'hbl_handle_subsite_actions');
 
 /**
- * AJAX handler for recreating pages
+ * Display rebuilt notice
  */
-function hbl_ajax_recreate_pages() {
-    // Check nonce
-    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'hbl_recreate_pages')) {
-        wp_send_json_error(array('message' => __('Security check failed.', 'happy-business-listing')));
+function hbl_display_rebuilt_notice() {
+    if (isset($_GET['page']) && $_GET['page'] === 'hbl_settings' && isset($_GET['tab']) && $_GET['tab'] === 'subsite' && isset($_GET['rebuilt'])) {
+        ?>
+        <div class="notice notice-success is-dismissible">
+            <p><?php _e('Site rebuilt successfully.', 'happy-business-listing'); ?></p>
+        </div>
+        <?php
     }
-    
-    // Check permissions
-    if (!current_user_can('manage_options')) {
-        wp_send_json_error(array('message' => __('You do not have permission to do this.', 'happy-business-listing')));
-    }
-    
-    // Check post ID and site ID
-    if (!isset($_POST['post_id']) || !isset($_POST['site_id'])) {
-        wp_send_json_error(array('message' => __('Missing required parameters.', 'happy-business-listing')));
-    }
-    
-    $post_id = intval($_POST['post_id']);
-    $site_id = intval($_POST['site_id']);
-    
-    // Verify the post and site exist
-    if (!get_post($post_id) || !get_site($site_id)) {
-        wp_send_json_error(array('message' => __('Invalid business listing or site.', 'happy-business-listing')));
-    }
-    
-    // Get business name
-    $business_name = hbl_get_field('business_name', $post_id);
-    if (empty($business_name)) {
-        $business_name = get_post($post_id)->post_title;
-    }
-    
-    // Switch to the site and recreate pages
-    switch_to_blog($site_id);
-    hbl_setup_business_site($post_id, $business_name);
-    restore_current_blog();
-    
-    wp_send_json_success();
 }
-add_action('wp_ajax_hbl_recreate_pages', 'hbl_ajax_recreate_pages');
+add_action('admin_notices', 'hbl_display_rebuilt_notice');
+
+/**
+ * Add documentation for sub-site creation
+ */
+function hbl_add_subsite_documentation() {
+    // Create documentation file if it doesn't exist
+    $doc_file = HBL_PLUGIN_DIR . 'docs/subsite-creation.md';
+    
+    if (!file_exists($doc_file)) {
+        $doc_content = "# Sub-site Creation Documentation
+
+The Happy Business Listing plugin includes a powerful feature for automatically creating sub-sites for each business listing in a multisite WordPress environment. This document provides detailed information about this feature, its configuration, and customization options.
+
+## Overview
+
+The sub-site creation feature allows you to:
+
+1. Automatically create a sub-site for each business listing
+2. Customize the content of the sub-site with templates
+3. Copy content from a template site
+4. Apply a specific theme to the sub-site
+5. Set up navigation menus and widgets
+
+## Requirements
+
+To use the sub-site creation feature, you need:
+
+- WordPress in multisite mode
+- The Happy Business Listing plugin activated network-wide
+- Appropriate permissions to create sites
+
+## Configuration
+
+You can configure the sub-site creation feature in the plugin settings under the 'Sub-sites' tab:
+
+### Enable Sub-site Creation
+
+Enable or disable automatic sub-site creation for business listings.
+
+### Template Site
+
+Select an existing site to use as a template for new business sites. All content, menus, and settings will be copied from this site.
+
+### Default Theme
+
+Select a theme to use for new business sites. If not specified, the default theme will be used.
+
+### Page Templates
+
+You can customize the content of the following pages:
+
+- **Home Page**: The front page of the business site
+- **About Page**: Information about the business
+- **Services Page**: Services offered by the business
+- **Contact Page**: Contact information and form
+
+Each template supports placeholders that will be replaced with actual business data:
+
+- `{business_name}`: The name of the business
+- `{company_type}`: The type of company (e.g., LLC, Corporation)
+- `{location}`: The business location
+- `{email}`: The business email address
+- `{phone}`: The business phone number
+- `{website}`: The business website URL
+- `{social_media}`: Social media links
+- `{whatsapp_number}`: WhatsApp contact number
+- `{contact_form}`: A contact form shortcode (Contact Page only)
+
+## How It Works
+
+When a new business listing is created:
+
+1. The plugin checks if sub-site creation is enabled
+2. If enabled, it creates a new sub-site with the business name
+3. It sets up the site with the specified theme and templates
+4. It creates standard pages (Home, About, Services, Contact)
+5. It sets up a navigation menu
+6. If a template site is specified, it copies content from that site
+
+## Managing Sub-sites
+
+You can manage business sub-sites from the 'Sub-sites' tab in the plugin settings:
+
+- View all business sub-sites
+- Access the dashboard of each sub-site
+- Rebuild a sub-site if needed
+
+## Customization
+
+### Hooks and Filters
+
+The sub-site creation process can be customized using the following hooks:
+
+- `hbl_subsite_title`: Filter the title of the sub-site
+- `hbl_after_subsite_creation`: Action after a sub-site is created
+- `hbl_after_subsite_setup`: Action after a sub-site is set up
+
+Example:
+
+```php
+// Customize the sub-site title
+add_filter('hbl_subsite_title', function($title, $post_id, $user_id) {
+    return 'Custom Title: ' . $title;
+}, 10, 3);
+
+// Do something after a sub-site is created
+add_action('hbl_after_subsite_creation', function($site_id, $post_id, $user_id) {
+    // Custom code here
+}, 10, 3);
+```
+
+### Template Customization
+
+You can customize the page templates in the plugin settings. Each template supports HTML and shortcodes.
+
+Example Home Page Template:
+
+```html
+<h1>Welcome to {business_name}</h1>
+<p>{business_name} is a {company_type} based in {location}.</p>
+<p>We offer high-quality services to meet your needs.</p>
+<div class=\"cta-buttons\">
+    <a href=\"/services\" class=\"button\">Our Services</a>
+    <a href=\"/contact\" class=\"button\">Contact Us</a>
+</div>
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### Sub-site Creation Fails
+
+If sub-site creation fails:
+
+1. Make sure WordPress is in multisite mode
+2. Check that the plugin is activated network-wide
+3. Verify that the user has permission to create sites
+4. Check the error logs for more information
+
+#### Template Content Not Copied
+
+If template content is not copied:
+
+1. Make sure the template site exists
+2. Verify that the template site has content
+3. Check that the template site is accessible
+
+#### Pages Not Created
+
+If pages are not created:
+
+1. Check the page templates in the plugin settings
+2. Verify that the business listing has the required fields
+3. Check the error logs for more information
+
+## Best Practices
+
+1. **Create a Template Site**: Set up a template site with the desired content, menus, and settings
+2. **Customize Page Templates**: Customize the page templates to match your branding
+3. **Use Placeholders**: Use placeholders to dynamically insert business information
+4. **Test Before Deployment**: Test the sub-site creation process before deploying to production
+5. **Regular Backups**: Regularly backup your database and files
+
+## Support
+
+If you encounter any issues with the sub-site creation feature, please contact our support team at support@happypress.com.";
+        
+        // Create directory if it doesn't exist
+        if (!file_exists(dirname($doc_file))) {
+            wp_mkdir_p(dirname($doc_file));
+        }
+        
+        // Write documentation file
+        file_put_contents($doc_file, $doc_content);
+    }
+}
+add_action('init', 'hbl_add_subsite_documentation');
 
 /**
  * Helper function to get field value with ACF fallback
  */
-function hbl_get_field($field_name, $post_id) {
+function hbl_get_business_field($field_name, $post_id) {
     // Try ACF first if available
     if (function_exists('get_field')) {
         return get_field($field_name, $post_id);
     }
-    
+
     // Fall back to post meta
     return get_post_meta($post_id, $field_name, true);
 }
@@ -823,7 +1154,7 @@ function hbl_update_field($field_name, $value, $post_id) {
     if (function_exists('update_field')) {
         return update_field($field_name, $value, $post_id);
     }
-    
+
     // Fall back to post meta
     return update_post_meta($post_id, $field_name, $value);
 }
