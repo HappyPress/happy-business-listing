@@ -15,42 +15,50 @@ Welcome to the Happy Business Listing plugin documentation. This documentation p
    - Template override system
    - Template functions and helpers
 
-3. WhatsApp Integration (Coming Soon)
+3. [Security](security.md)
+   - Input validation and sanitization
+   - CSRF protection
+   - Capability checks
+   - Rate limiting
+   - Security headers
+   - Security logging
+
+4. WhatsApp Integration (Coming Soon)
    - Twilio API integration
    - WhatsApp Business API integration
    - Message templates and notifications
 
-4. User Management (Coming Soon)
+5. User Management (Coming Soon)
    - Business user roles and capabilities
    - User registration and authentication
    - User-business relationship management
 
-5. Custom Post Types (Coming Soon)
+6. Custom Post Types (Coming Soon)
    - Business listings
    - Services and products
    - Leads
 
-6. Gutenberg Blocks (Coming Soon)
+7. Gutenberg Blocks (Coming Soon)
    - Business listings block
    - Business search block
    - Business details block
 
-7. Shortcodes (Coming Soon)
+8. Shortcodes (Coming Soon)
    - Business signup form
    - Business search
    - Business listings
 
-8. Settings (Coming Soon)
+9. Settings (Coming Soon)
    - General settings
    - WhatsApp integration settings
    - Permalink settings
    - Sub-site creation settings
 
-9. Developer Guide (Coming Soon)
-   - Hooks and filters
-   - Helper functions
-   - Custom templates
-   - API integration
+10. Developer Guide (Coming Soon)
+    - Hooks and filters
+    - Helper functions
+    - Custom templates
+    - API integration
 
 ## Getting Started
 
