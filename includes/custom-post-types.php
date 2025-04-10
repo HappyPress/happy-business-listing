@@ -41,6 +41,15 @@ function hbl_add_business_listing_meta_boxes() {
 }
 add_action('add_meta_boxes', 'hbl_add_business_listing_meta_boxes');
 
+/**
+ * Callback function for the business details meta box.
+ * 
+ * Note: This function is used when ACF is not available.
+ * For ACF integration, see the hbl_acf_business_details_callback() function in acf-fields.php.
+ * 
+ * @param WP_Post $post The post object.
+ * @return void
+ */
 function hbl_business_details_callback($post) {
     wp_nonce_field('hbl_save_business_details', 'hbl_business_details_nonce');
 

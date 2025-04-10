@@ -92,6 +92,9 @@ class Happy_Business_Listing {
         require_once HBL_PLUGIN_DIR . 'includes/helpers.php';
         
         // Core functionality
+        // Note: The order of these includes is important to avoid function name conflicts.
+        // custom-post-types.php must be loaded before acf-fields.php because acf-fields.php
+        // contains functions that override or extend functionality in custom-post-types.php.
         require_once HBL_PLUGIN_DIR . 'includes/custom-post-types.php';
         require_once HBL_PLUGIN_DIR . 'includes/acf-fields.php';
         require_once HBL_PLUGIN_DIR . 'includes/user-registration.php';
