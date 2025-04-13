@@ -103,6 +103,9 @@ function hbl_sanitize_phone($phone) {
         $sanitized = '+' . $sanitized;
     }
     
+    // Remove extra spaces
+    $sanitized = preg_replace('/\s+/', ' ', $sanitized);
+    
     return $sanitized;
 }
 
@@ -113,6 +116,11 @@ function hbl_sanitize_phone($phone) {
  * @return bool True if valid URL, false otherwise
  */
 function hbl_is_valid_url($url) {
+    // Check if URL starts with http:// or https://
+    if (!preg_match('/^https?:\/\//', $url)) {
+        return false;
+    }
+    
     return filter_var($url, FILTER_VALIDATE_URL) !== false;
 }
 
@@ -346,31 +354,16 @@ function hbl_get_related_businesses($business_id, $limit = 3) {
 /**
  * Get business field with proper fallback
  *
- * @param int $post_id The post ID
  * @param string $field_name The field name
- * @param bool $format Whether to format the value
+ * @param int $post_id The post ID
+ * @param mixed $default Default value if field is empty
  * @return mixed The field value
  */
-function hbl_get_business_field($post_id, $field_name, $format = true) {
+function hbl_get_business_field($field_name, $post_id, $default = '') {
     $value = get_post_meta($post_id, $field_name, true);
     
     if (empty($value)) {
-        return '';
-    }
-    
-    if ($format) {
-        switch ($field_name) {
-            case 'phone':
-                return hbl_sanitize_phone($value);
-            case 'email':
-                return sanitize_email($value);
-            case 'website':
-                return esc_url($value);
-            case 'price':
-                return hbl_format_price($value);
-            default:
-                return esc_html($value);
-        }
+        return $default;
     }
     
     return $value;
@@ -397,7 +390,7 @@ function hbl_get_business_meta($post_id) {
     );
     
     foreach ($fields as $field => $label) {
-        $value = hbl_get_business_field($post_id, $field);
+        $value = hbl_get_business_field($field, $post_id);
         if (!empty($value)) {
             $meta[$field] = array(
                 'label' => $label,
