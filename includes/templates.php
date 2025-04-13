@@ -179,23 +179,12 @@ function hbl_get_social_media_links($post_id = null, $args = array()) {
         $social_media_array = $social_media;
     }
     
-    // If still empty, check individual fields
-    if (empty($social_media_array)) {
-        $platforms = array('facebook', 'twitter', 'instagram', 'linkedin', 'youtube');
-        foreach ($platforms as $platform) {
-            $url = hbl_get_business_field($platform . '_url', $post_id);
-            if (!empty($url)) {
-                $social_media_array[$platform] = $url;
-            }
-        }
-    }
-    
-    // If still empty, return empty string
+    // If no social media links, return empty string
     if (empty($social_media_array)) {
         return '';
     }
     
-    // Build HTML
+    // Start building HTML
     $html = '<div class="' . esc_attr($args['wrapper_class']) . '">';
     
     foreach ($social_media_array as $platform => $url) {
@@ -204,42 +193,19 @@ function hbl_get_social_media_links($post_id = null, $args = array()) {
             continue;
         }
         
-        // Ensure URL has protocol
-        if (strpos($url, 'http') !== 0) {
-            $url = 'https://' . $url;
-        }
+        // Format platform name for display
+        $platform_display = ucfirst($platform);
         
-        // Get icon class based on platform
-        $icon_class = 'dashicons';
-        switch (strtolower($platform)) {
-            case 'facebook':
-                $icon_class .= ' dashicons-facebook';
-                break;
-            case 'twitter':
-            case 'x':
-                $icon_class .= ' dashicons-twitter';
-                break;
-            case 'instagram':
-                $icon_class .= ' dashicons-instagram';
-                break;
-            case 'linkedin':
-                $icon_class .= ' dashicons-linkedin';
-                break;
-            case 'youtube':
-                $icon_class .= ' dashicons-video-alt3';
-                break;
-            default:
-                $icon_class .= ' dashicons-share';
-                break;
-        }
-        
+        // Build link HTML
         $html .= '<a href="' . esc_url($url) . '" class="' . esc_attr($args['link_class']) . ' ' . esc_attr($platform) . '" target="' . esc_attr($args['target']) . '" rel="' . esc_attr($args['rel']) . '">';
-        $html .= '<span class="' . esc_attr($icon_class) . '" aria-hidden="true"></span>';
         
+        // Add platform icon if available
+        $icon_class = 'hbl-icon-' . $platform;
+        $html .= '<span class="' . esc_attr($icon_class) . '"></span>';
+        
+        // Add platform name if show_labels is true
         if ($args['show_labels']) {
-            $html .= '<span class="social-label">' . esc_html(ucfirst($platform)) . '</span>';
-        } else {
-            $html .= '<span class="screen-reader-text">' . esc_html(ucfirst($platform)) . '</span>';
+            $html .= '<span class="platform-name">' . esc_html($platform_display) . '</span>';
         }
         
         $html .= '</a>';
@@ -265,7 +231,7 @@ function hbl_get_contact_info($post_id = null, $args = array()) {
     // Default arguments
     $defaults = array(
         'wrapper_class' => 'business-contact-info',
-        'show_labels' => true,
+        'show_labels' => false,
         'show_phone' => true,
         'show_email' => true,
         'show_website' => true,
@@ -287,14 +253,14 @@ function hbl_get_contact_info($post_id = null, $args = array()) {
         return '';
     }
     
-    // Build HTML
+    // Start building HTML
     $html = '<div class="' . esc_attr($args['wrapper_class']) . '">';
     
     // Phone
     if ($args['show_phone'] && !empty($phone)) {
         $html .= '<div class="contact-item phone">';
         if ($args['show_labels']) {
-            $html .= '<span class="contact-label">' . esc_html__('Phone:', 'happy-business-listing') . '</span> ';
+            $html .= '<span class="contact-label">' . __('Phone:', 'happy-business-listing') . '</span> ';
         }
         $html .= '<a href="tel:' . esc_attr(preg_replace('/[^0-9+]/', '', $phone)) . '">' . esc_html($phone) . '</a>';
         $html .= '</div>';
@@ -304,7 +270,7 @@ function hbl_get_contact_info($post_id = null, $args = array()) {
     if ($args['show_email'] && !empty($email)) {
         $html .= '<div class="contact-item email">';
         if ($args['show_labels']) {
-            $html .= '<span class="contact-label">' . esc_html__('Email:', 'happy-business-listing') . '</span> ';
+            $html .= '<span class="contact-label">' . __('Email:', 'happy-business-listing') . '</span> ';
         }
         $html .= '<a href="mailto:' . esc_attr($email) . '">' . esc_html($email) . '</a>';
         $html .= '</div>';
@@ -314,7 +280,7 @@ function hbl_get_contact_info($post_id = null, $args = array()) {
     if ($args['show_website'] && !empty($website)) {
         $html .= '<div class="contact-item website">';
         if ($args['show_labels']) {
-            $html .= '<span class="contact-label">' . esc_html__('Website:', 'happy-business-listing') . '</span> ';
+            $html .= '<span class="contact-label">' . __('Website:', 'happy-business-listing') . '</span> ';
         }
         $html .= '<a href="' . esc_url($website) . '" target="_blank" rel="noopener noreferrer">' . esc_html($website) . '</a>';
         $html .= '</div>';
@@ -324,7 +290,7 @@ function hbl_get_contact_info($post_id = null, $args = array()) {
     if ($args['show_whatsapp'] && !empty($whatsapp)) {
         $html .= '<div class="contact-item whatsapp">';
         if ($args['show_labels']) {
-            $html .= '<span class="contact-label">' . esc_html__('WhatsApp:', 'happy-business-listing') . '</span> ';
+            $html .= '<span class="contact-label">' . __('WhatsApp:', 'happy-business-listing') . '</span> ';
         }
         $html .= '<a href="https://wa.me/' . esc_attr(preg_replace('/[^0-9]/', '', $whatsapp)) . '" target="_blank" rel="noopener noreferrer">' . esc_html($whatsapp) . '</a>';
         $html .= '</div>';
@@ -334,9 +300,9 @@ function hbl_get_contact_info($post_id = null, $args = array()) {
     if ($args['show_location'] && !empty($location)) {
         $html .= '<div class="contact-item location">';
         if ($args['show_labels']) {
-            $html .= '<span class="contact-label">' . esc_html__('Location:', 'happy-business-listing') . '</span> ';
+            $html .= '<span class="contact-label">' . __('Location:', 'happy-business-listing') . '</span> ';
         }
-        $html .= esc_html($location);
+        $html .= '<span class="location-text">' . esc_html($location) . '</span>';
         $html .= '</div>';
     }
     
