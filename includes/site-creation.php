@@ -1149,12 +1149,3 @@ function hbl_get_business_field($field_name, $post_id) {
 /**
  * Helper function to update field value with ACF fallback
  */
-function hbl_update_field($field_name, $value, $post_id) {
-    // Try ACF first if available
-    if (function_exists('update_field')) {
-        return update_field($field_name, $value, $post_id);
-    }
-
-    // Fall back to post meta
-    return update_post_meta($post_id, $field_name, $value);
-}
