@@ -892,23 +892,6 @@ function hbl_save_lead_details($post_id) {
 add_action('save_post_lead', 'hbl_save_lead_details');
 
 /**
- * Helper function to get field value regardless of ACF availability
- */
-function hbl_get_field($field_name, $post_id = false) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
-    
-    // Try ACF function first if available
-    if (function_exists('get_field')) {
-        return get_field($field_name, $post_id);
-    }
-    
-    // Fall back to regular post meta
-    return get_post_meta($post_id, $field_name, true);
-}
-
-/**
  * Helper function to update field value regardless of ACF availability
  */
 function hbl_update_field($field_name, $value, $post_id = false) {
