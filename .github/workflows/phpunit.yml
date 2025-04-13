@@ -58,7 +58,43 @@ jobs:
         WP_CORE_DIR: /tmp/wordpress
     
     - name: Run PHPUnit
-      run: vendor/bin/phpunit --coverage-clover=coverage.xml
+      run: |
+        # Create a custom phpunit.xml file for this environment
+        cat > phpunit.xml.dist << 'EOL'
+        <?xml version="1.0"?>
+        <phpunit
+            bootstrap="tests/bootstrap.php"
+            backupGlobals="false"
+            colors="true"
+            convertErrorsToExceptions="true"
+            convertNoticesToExceptions="true"
+            convertWarningsToExceptions="true"
+            >
+            <testsuites>
+                <testsuite name="unit">
+                    <directory prefix="test-" suffix=".php">./tests/unit/</directory>
+                </testsuite>
+                <testsuite name="integration">
+                    <directory prefix="test-" suffix=".php">./tests/integration/</directory>
+                </testsuite>
+            </testsuites>
+            <filter>
+                <whitelist>
+                    <directory suffix=".php">./includes</directory>
+                    <exclude>
+                        <directory suffix=".php">./vendor</directory>
+                        <directory suffix=".php">./tests</directory>
+                    </exclude>
+                </whitelist>
+            </filter>
+        </phpunit>
+        EOL
+        
+        # Run PHPUnit with verbose output to see what's failing
+        vendor/bin/phpunit --coverage-clover=coverage.xml --verbose
+      env:
+        WP_TESTS_DIR: /tmp/wordpress-tests-lib
+        WP_CORE_DIR: /tmp/wordpress
     
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
