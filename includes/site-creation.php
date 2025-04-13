@@ -125,13 +125,13 @@ function hbl_create_business_subsite($post_id, $user_id, $business_name, $userna
  */
 function hbl_setup_business_site($post_id, $business_name) {
     // Get business details
-    $company_type = hbl_get_business_field('company_type', $post_id);
-    $location = hbl_get_business_field('location', $post_id);
-    $website = hbl_get_business_field('website', $post_id);
-    $social_media = hbl_get_business_field('social_media', $post_id);
-    $whatsapp_number = hbl_get_business_field('whatsapp_number', $post_id);
-    $email = hbl_get_business_field('email', $post_id);
-    $phone = hbl_get_business_field('phone', $post_id);
+    $company_type = hbl_get_field_value('company_type', $post_id);
+    $location = hbl_get_field_value('location', $post_id);
+    $website = hbl_get_field_value('website', $post_id);
+    $social_media = hbl_get_field_value('social_media', $post_id);
+    $whatsapp_number = hbl_get_field_value('whatsapp_number', $post_id);
+    $email = hbl_get_field_value('email', $post_id);
+    $phone = hbl_get_field_value('phone', $post_id);
     
     // Get page content templates from settings
     $home_content_template = get_option('hbl_home_page_template', '');
@@ -413,13 +413,13 @@ function hbl_copy_template_content($template_id, $site_id, $post_id) {
     }
     
     // Get business details for replacements
-    $business_name = hbl_get_business_field('business_name', $post_id);
-    $company_type = hbl_get_business_field('company_type', $post_id);
-    $location = hbl_get_business_field('location', $post_id);
-    $email = hbl_get_business_field('email', $post_id);
-    $phone = hbl_get_business_field('phone', $post_id);
-    $website = hbl_get_business_field('website', $post_id);
-    $whatsapp_number = hbl_get_business_field('whatsapp_number', $post_id);
+    $business_name = hbl_get_field_value('business_name', $post_id);
+    $company_type = hbl_get_field_value('company_type', $post_id);
+    $location = hbl_get_field_value('location', $post_id);
+    $email = hbl_get_field_value('email', $post_id);
+    $phone = hbl_get_field_value('phone', $post_id);
+    $website = hbl_get_field_value('website', $post_id);
+    $whatsapp_number = hbl_get_field_value('whatsapp_number', $post_id);
     
     // Switch to template site to get content
     switch_to_blog($template_id);
@@ -865,7 +865,7 @@ function hbl_display_business_subsites() {
     echo '<tbody>';
     
     foreach ($businesses as $business) {
-        $site_id = hbl_get_business_field('site_id', $business->ID);
+        $site_id = hbl_get_field_value('site_id', $business->ID);
         $site_details = get_blog_details($site_id);
         
         if (!$site_details) {
@@ -909,12 +909,12 @@ function hbl_handle_subsite_actions() {
             wp_die(__('Invalid business listing.', 'happy-business-listing'));
         }
         
-        $site_id = hbl_get_business_field('site_id', $business_id);
+        $site_id = hbl_get_field_value('site_id', $business_id);
         if (!$site_id) {
             wp_die(__('No site ID found for this business.', 'happy-business-listing'));
         }
         
-        $business_name = hbl_get_business_field('business_name', $business_id);
+        $business_name = hbl_get_field_value('business_name', $business_id);
         if (empty($business_name)) {
             $business_name = $business->post_title;
         }
@@ -1135,8 +1135,12 @@ add_action('init', 'hbl_add_subsite_documentation');
 
 /**
  * Helper function to get field value with ACF fallback
+ * 
+ * @param string $field_name The field name
+ * @param int $post_id The post ID
+ * @return mixed The field value
  */
-function hbl_get_business_field($field_name, $post_id) {
+function hbl_get_field_value($field_name, $post_id) {
     // Try ACF first if available
     if (function_exists('get_field')) {
         return get_field($field_name, $post_id);
