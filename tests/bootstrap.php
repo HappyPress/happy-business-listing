@@ -5,11 +5,22 @@
  * @package Happy_Business_Listing
  */
 
-// Define constants for testing
-define('HBL_TESTING', true);
-define('HBL_PLUGIN_DIR', dirname(__DIR__) . '/');
-define('HBL_PLUGIN_URL', 'http://example.org/wp-content/plugins/happy-business-listing/');
-define('HBL_VERSION', '1.0.0');
+// Define constants for testing if not already defined
+if (!defined('HBL_TESTING')) {
+    define('HBL_TESTING', true);
+}
+
+if (!defined('HBL_PLUGIN_DIR')) {
+    define('HBL_PLUGIN_DIR', dirname(__DIR__) . '/');
+}
+
+if (!defined('HBL_PLUGIN_URL')) {
+    define('HBL_PLUGIN_URL', 'http://example.org/wp-content/plugins/happy-business-listing/');
+}
+
+if (!defined('HBL_VERSION')) {
+    define('HBL_VERSION', '1.0.0');
+}
 
 // Load Composer autoloader
 require_once dirname(__DIR__) . '/vendor/autoload.php';
