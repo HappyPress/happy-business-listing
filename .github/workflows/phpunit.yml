@@ -39,11 +39,21 @@ jobs:
         tools: composer:v2
         coverage: xdebug
     
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y subversion mysql-client
+    
     - name: Install Composer dependencies
       run: composer install --prefer-dist --no-progress
     
-    - name: Install WordPress test suite
-      run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 ${{ matrix.wordpress-versions }}
+    - name: Setup WordPress test environment
+      run: |
+        chmod +x bin/install-wp-tests.sh
+        bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 ${{ matrix.wordpress-versions }}
+      env:
+        WP_TESTS_DIR: /tmp/wordpress-tests-lib
+        WP_CORE_DIR: /tmp/wordpress
     
     - name: Run PHPUnit
       run: vendor/bin/phpunit --coverage-clover=coverage.xml
