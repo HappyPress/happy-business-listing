@@ -282,35 +282,28 @@ function hbl_send_registration_email($user_id, $password, $post_id) {
  */
 function hbl_add_business_user_capabilities() {
     $role = get_role('business_user');
+    
     if (!$role) {
-        return;
+        add_role('business_user', __('Business User', 'happy-business-listing'), array(
+            'read' => true,
+            'edit_posts' => false,
+            'delete_posts' => false,
+            'upload_files' => true
+        ));
     }
     
-    // Add capabilities for service_product post type
-    $role->add_cap('edit_service_product');
-    $role->add_cap('read_service_product');
-    $role->add_cap('delete_service_product');
-    $role->add_cap('edit_service_products');
-    $role->add_cap('edit_published_service_products');
-    $role->add_cap('publish_service_products');
-    $role->add_cap('delete_published_service_products');
-    
-    // Add capabilities for lead post type
-    $role->add_cap('read_lead');
-    $role->add_cap('edit_lead');
-    $role->add_cap('delete_lead');
-    $role->add_cap('edit_leads');
-    $role->add_cap('edit_published_leads');
-    $role->add_cap('publish_leads');
-    $role->add_cap('delete_published_leads');
-    
-    // Remove capabilities that could be security risks
-    $role->remove_cap('edit_others_posts');
-    $role->remove_cap('delete_others_posts');
-    $role->remove_cap('edit_others_service_products');
-    $role->remove_cap('delete_others_service_products');
-    $role->remove_cap('edit_others_leads');
-    $role->remove_cap('delete_others_leads');
+    $role = get_role('business_user');
+    $role->add_cap('edit_business_listing');
+    $role->add_cap('edit_business_listings');
+    $role->add_cap('edit_others_business_listings');
+    $role->add_cap('publish_business_listings');
+    $role->add_cap('read_business_listing');
+    $role->add_cap('read_private_business_listings');
+    $role->add_cap('delete_business_listing');
+    $role->add_cap('delete_business_listings');
+    $role->add_cap('delete_others_business_listings');
+    $role->add_cap('delete_published_business_listings');
+    $role->add_cap('delete_private_business_listings');
 }
 add_action('admin_init', 'hbl_add_business_user_capabilities');
 

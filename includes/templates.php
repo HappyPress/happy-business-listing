@@ -277,96 +277,59 @@ function hbl_get_contact_info($post_id = null, $args = array()) {
 }
 
 /**
- * Get business details as formatted HTML
+ * Get business details
  *
- * @param int $post_id The post ID (optional)
- * @param array $args Additional arguments
- * @return string Formatted HTML for business details
+ * @param int $post_id The post ID
+ * @return string The business details HTML
  */
-function hbl_get_business_details($post_id = null, $args = array()) {
-    if (!$post_id) {
-        $post_id = get_the_ID();
+function hbl_get_business_details($post_id) {
+    $company_type = hbl_get_business_field($post_id, 'company_type');
+    $gst_no = hbl_get_business_field($post_id, 'gst_no');
+    $tan_pan = hbl_get_business_field($post_id, 'tan_pan');
+    $verification_status = hbl_get_business_field($post_id, 'verification_status');
+    $established_date = hbl_get_business_field($post_id, 'established_date');
+    
+    $html = '<div class="business-details">';
+    
+    if ($company_type) {
+        $html .= sprintf(
+            '<div class="business-detail company-type"><strong class="detail-label">%s</strong><span class="detail-value">%s</span></div>',
+            esc_html__('Type of Company:', 'happy-business-listing'),
+            esc_html($company_type)
+        );
     }
     
-    // Default arguments
-    $defaults = array(
-        'wrapper_class' => 'business-details',
-        'item_class' => 'business-detail',
-        'show_company_type' => true,
-        'show_gst' => true,
-        'show_tan_pan' => true,
-        'show_verification' => true,
-        'custom_fields' => array()
-    );
-    
-    $args = wp_parse_args($args, $defaults);
-    
-    // Get business details
-    $company_type = hbl_get_business_field('company_type', $post_id);
-    $gst_no = hbl_get_business_field('gst_no', $post_id);
-    $tan_pan = hbl_get_business_field('tan_pan', $post_id);
-    $verification_status = hbl_get_business_field('verification_status', $post_id);
-    $established_date = hbl_get_business_field('established_date', $post_id);
-    
-    // Build HTML
-    $html = '<div class="' . esc_attr($args['wrapper_class']) . '">';
-    
-    // Company Type
-    if ($args['show_company_type'] && !empty($company_type)) {
-        $html .= '<div class="' . esc_attr($args['item_class']) . ' company-type">';
-        $html .= '<strong class="detail-label">' . esc_html__('Type of Company:', 'happy-business-listing') . '</strong>';
-        $html .= '<span class="detail-value">' . esc_html($company_type) . '</span>';
-        $html .= '</div>';
+    if ($gst_no) {
+        $html .= sprintf(
+            '<div class="business-detail gst-no"><strong class="detail-label">%s</strong><span class="detail-value">%s</span></div>',
+            esc_html__('GST No:', 'happy-business-listing'),
+            esc_html($gst_no)
+        );
     }
     
-    // GST No
-    if ($args['show_gst'] && !empty($gst_no)) {
-        $html .= '<div class="' . esc_attr($args['item_class']) . ' gst-no">';
-        $html .= '<strong class="detail-label">' . esc_html__('GST No:', 'happy-business-listing') . '</strong>';
-        $html .= '<span class="detail-value">' . esc_html($gst_no) . '</span>';
-        $html .= '</div>';
+    if ($tan_pan) {
+        $html .= sprintf(
+            '<div class="business-detail tan-pan"><strong class="detail-label">%s</strong><span class="detail-value">%s</span></div>',
+            esc_html__('TAN/PAN:', 'happy-business-listing'),
+            esc_html($tan_pan)
+        );
     }
     
-    // TAN/PAN
-    if ($args['show_tan_pan'] && !empty($tan_pan)) {
-        $html .= '<div class="' . esc_attr($args['item_class']) . ' tan-pan">';
-        $html .= '<strong class="detail-label">' . esc_html__('TAN/PAN:', 'happy-business-listing') . '</strong>';
-        $html .= '<span class="detail-value">' . esc_html($tan_pan) . '</span>';
-        $html .= '</div>';
+    if ($verification_status) {
+        $html .= sprintf(
+            '<div class="business-detail verification-status"><strong class="detail-label">%s</strong><span class="detail-value status-%s">%s</span></div>',
+            esc_html__('Verification Status:', 'happy-business-listing'),
+            esc_attr(strtolower($verification_status)),
+            esc_html($verification_status)
+        );
     }
     
-    // Verification Status
-    if ($args['show_verification'] && !empty($verification_status)) {
-        $html .= '<div class="' . esc_attr($args['item_class']) . ' verification-status">';
-        $html .= '<strong class="detail-label">' . esc_html__('Verification Status:', 'happy-business-listing') . '</strong>';
-        
-        $status_class = 'status-' . sanitize_html_class($verification_status);
-        $status_label = ucfirst($verification_status);
-        
-        $html .= '<span class="detail-value ' . esc_attr($status_class) . '">' . esc_html($status_label) . '</span>';
-        $html .= '</div>';
-    }
-    
-    // Established Date
-    if (!empty($established_date)) {
-        $html .= '<div class="' . esc_attr($args['item_class']) . ' established-date">';
-        $html .= '<strong class="detail-label">' . esc_html__('Established:', 'happy-business-listing') . '</strong>';
-        $html .= '<span class="detail-value">' . esc_html($established_date) . '</span>';
-        $html .= '</div>';
-    }
-    
-    // Custom Fields
-    if (!empty($args['custom_fields']) && is_array($args['custom_fields'])) {
-        foreach ($args['custom_fields'] as $field_key => $field_label) {
-            $field_value = hbl_get_business_field($field_key, $post_id);
-            
-            if (!empty($field_value)) {
-                $html .= '<div class="' . esc_attr($args['item_class']) . ' ' . sanitize_html_class($field_key) . '">';
-                $html .= '<strong class="detail-label">' . esc_html($field_label) . ':</strong>';
-                $html .= '<span class="detail-value">' . esc_html($field_value) . '</span>';
-                $html .= '</div>';
-            }
-        }
+    if ($established_date) {
+        $html .= sprintf(
+            '<div class="business-detail established-date"><strong class="detail-label">%s</strong><span class="detail-value">%s</span></div>',
+            esc_html__('Established:', 'happy-business-listing'),
+            esc_html($established_date)
+        );
     }
     
     $html .= '</div>';

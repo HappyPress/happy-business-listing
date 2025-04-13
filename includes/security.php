@@ -257,22 +257,7 @@ function hbl_sanitize_input_bool($value) {
  * @return string Sanitized phone number
  */
 function hbl_sanitize_input_phone($phone) {
-    if (empty($phone)) {
-        return '';
-    }
-    
-    // Remove all characters except digits, plus sign, hyphen, parentheses, and spaces
-    $sanitized = preg_replace('/[^0-9+\-() ]/', '', $phone);
-    
-    // Ensure the number starts with a plus sign if it contains country code
-    if (preg_match('/^[0-9]/', $sanitized)) {
-        $sanitized = '+' . $sanitized;
-    }
-    
-    // Remove extra spaces
-    $sanitized = preg_replace('/\s+/', ' ', $sanitized);
-    
-    return trim($sanitized);
+    return hbl_sanitize_phone($phone);
 }
 
 /**
