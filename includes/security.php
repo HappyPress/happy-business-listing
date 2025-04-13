@@ -138,7 +138,12 @@ function hbl_sanitize_input($input, $type = 'text', $args = array()) {
             
         case 'bool':
         case 'boolean':
-            $sanitized = (bool) $input;
+            if (is_bool($input)) {
+                $sanitized = $input;
+            } else {
+                $input = strtolower(trim($input));
+                $sanitized = in_array($input, array('1', 'true', 'yes', 'on'), true);
+            }
             break;
             
         case 'select':
@@ -156,7 +161,10 @@ function hbl_sanitize_input($input, $type = 'text', $args = array()) {
             break;
             
         case 'phone':
+            // Allow digits, plus sign, parentheses, spaces, and hyphens
             $sanitized = preg_replace('/[^0-9+\-() ]/', '', $input);
+            // Remove multiple spaces
+            $sanitized = preg_replace('/\s+/', ' ', $sanitized);
             break;
             
         case 'slug':
