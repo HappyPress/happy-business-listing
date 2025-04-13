@@ -81,11 +81,15 @@ function hbl_get_field($field_name, $post_id, $default = '') {
 function hbl_update_field($field_name, $value, $post_id) {
     // Try ACF first if available
     if (function_exists('update_field')) {
-        return update_field($field_name, $value, $post_id);
+        $result = update_field($field_name, $value, $post_id);
+        if ($result !== false) {
+            return true;
+        }
     }
     
     // Fallback to post meta
-    return update_post_meta($post_id, $field_name, $value);
+    $result = update_post_meta($post_id, $field_name, $value);
+    return $result !== false;
 }
 
 /**
@@ -106,7 +110,7 @@ function hbl_sanitize_phone($phone) {
     // Remove extra spaces
     $sanitized = preg_replace('/\s+/', ' ', $sanitized);
     
-    return $sanitized;
+    return trim($sanitized);
 }
 
 /**

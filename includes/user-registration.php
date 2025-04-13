@@ -799,3 +799,88 @@ function hbl_add_security_profile_fields($user) {
 }
 add_action('show_user_profile', 'hbl_add_security_profile_fields');
 add_action('edit_user_profile', 'hbl_add_security_profile_fields');
+
+/**
+ * Create user from business listing
+ *
+ * @param int $business_id The business ID
+ * @return int|WP_Error The user ID or WP_Error on failure
+ */
+function hbl_create_user_from_business($business_id) {
+    $business_email = hbl_get_business_field($business_id, 'business_email');
+    $business_name = hbl_get_business_field($business_id, 'business_name');
+    
+    if (empty($business_email) || empty($business_name)) {
+        return new WP_Error('missing_data', __('Business email and name are required.', 'happy-business-listing'));
+    }
+    
+    // Check if user already exists
+    $user = get_user_by('email', $business_email);
+    if ($user) {
+        return $user->ID;
+    }
+    
+    // Generate username from business name
+    $username = sanitize_user(strtolower(str_replace(' ', '', $business_name)));
+    $username = preg_replace('/[^a-z0-9]/', '', $username);
+    
+    // Ensure username is unique
+    $count = 1;
+    $original_username = $username;
+    while (username_exists($username)) {
+        $username = $original_username . $count;
+        $count++;
+    }
+    
+    // Generate random password
+    $password = wp_generate_password();
+    
+    // Create user
+    $user_id = wp_create_user($username, $password, $business_email);
+    
+    if (is_wp_error($user_id)) {
+        return $user_id;
+    }
+    
+    // Set user role
+    $user = new WP_User($user_id);
+    $user->set_role('business_user');
+    
+    // Update user meta
+    update_user_meta($user_id, 'business_id', $business_id);
+    
+    // Send welcome email
+    wp_new_user_notification($user_id, null, 'user');
+    
+    return $user_id;
+}
+
+/**
+ * Filter content for business users
+ *
+ * @param string $content The content to filter
+ * @return string The filtered content
+ */
+function hbl_filter_content_for_business_users($content) {
+    if (!is_user_logged_in()) {
+        return $content;
+    }
+    
+    $user = wp_get_current_user();
+    if (!in_array('business_user', (array) $user->roles)) {
+        return $content;
+    }
+    
+    $business_id = get_user_meta($user->ID, 'business_id', true);
+    if (!$business_id) {
+        return $content;
+    }
+    
+    // Add business ID to content
+    $content .= sprintf(
+        '<input type="hidden" name="business_id" value="%d">',
+        esc_attr($business_id)
+    );
+    
+    return $content;
+}

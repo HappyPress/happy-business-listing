@@ -11,74 +11,39 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Load custom templates for business listings
+ * Load plugin templates
  *
- * @param string $template The path of the template to include
- * @return string The path of the template to include
+ * @param string $template The template path
+ * @return string The template path
  */
 function hbl_load_plugin_templates($template) {
-    // Get the post type
-    $post_type = get_post_type();
+    global $post;
     
-    // Only apply to our post types
-    if ($post_type !== 'business_listing' && $post_type !== 'service_product') {
-        return $template;
-    }
-    
-    // Check if a template exists in the theme
+    // Check if we're on a business listing page
     if (is_singular('business_listing')) {
-        $theme_template = locate_template(array(
-            'single-business_listing.php',
-            'hbl/single-business_listing.php'
-        ));
+        $template_path = 'templates/single-business-listing.php';
+        $template_file = locate_template($template_path);
         
-        if ($theme_template) {
-            return $theme_template;
+        if (!$template_file) {
+            $template_file = HBL_PLUGIN_DIR . $template_path;
         }
         
-        // Use plugin template as fallback
-        $plugin_template = HBL_PLUGIN_DIR . 'templates/single-business_listing.php';
-        if (file_exists($plugin_template)) {
-            return $plugin_template;
-        }
-    } 
-    
-    if (is_post_type_archive('business_listing')) {
-        $theme_template = locate_template(array(
-            'archive-business_listing.php',
-            'hbl/archive-business_listing.php'
-        ));
-        
-        if ($theme_template) {
-            return $theme_template;
-        }
-        
-        // Use plugin template as fallback
-        $plugin_template = HBL_PLUGIN_DIR . 'templates/archive-business_listing.php';
-        if (file_exists($plugin_template)) {
-            return $plugin_template;
+        if (file_exists($template_file)) {
+            return $template_file;
         }
     }
     
-    if (is_tax('business_category') || is_tax('business_location')) {
-        $term = get_queried_object();
-        $taxonomy = $term->taxonomy;
+    // Check if we're on a business listing archive page
+    if (is_post_type_archive('business_listing')) {
+        $template_path = 'templates/archive-business-listing.php';
+        $template_file = locate_template($template_path);
         
-        // Try to find a template for this specific taxonomy term
-        $theme_template = locate_template(array(
-            "taxonomy-{$taxonomy}-{$term->slug}.php",
-            "taxonomy-{$taxonomy}.php",
-            'hbl/taxonomy.php'
-        ));
-        
-        if ($theme_template) {
-            return $theme_template;
+        if (!$template_file) {
+            $template_file = HBL_PLUGIN_DIR . $template_path;
         }
         
-        // Use plugin template as fallback
-        $plugin_template = HBL_PLUGIN_DIR . 'templates/taxonomy.php';
-        if (file_exists($plugin_template)) {
-            return $plugin_template;
+        if (file_exists($template_file)) {
+            return $template_file;
         }
     }
     
@@ -341,6 +306,7 @@ function hbl_get_business_details($post_id = null, $args = array()) {
     $gst_no = hbl_get_business_field('gst_no', $post_id);
     $tan_pan = hbl_get_business_field('tan_pan', $post_id);
     $verification_status = hbl_get_business_field('verification_status', $post_id);
+    $established_date = hbl_get_business_field('established_date', $post_id);
     
     // Build HTML
     $html = '<div class="' . esc_attr($args['wrapper_class']) . '">';
@@ -378,6 +344,14 @@ function hbl_get_business_details($post_id = null, $args = array()) {
         $status_label = ucfirst($verification_status);
         
         $html .= '<span class="detail-value ' . esc_attr($status_class) . '">' . esc_html($status_label) . '</span>';
+        $html .= '</div>';
+    }
+    
+    // Established Date
+    if (!empty($established_date)) {
+        $html .= '<div class="' . esc_attr($args['item_class']) . ' established-date">';
+        $html .= '<strong class="detail-label">' . esc_html__('Established:', 'happy-business-listing') . '</strong>';
+        $html .= '<span class="detail-value">' . esc_html($established_date) . '</span>';
         $html .= '</div>';
     }
     

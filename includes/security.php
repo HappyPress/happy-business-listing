@@ -213,40 +213,120 @@ function hbl_sanitize_input($input, $type = 'text', $args = array()) {
 }
 
 /**
- * Validate and sanitize form data
+ * Sanitize URL input
+ *
+ * @param string $url The URL to sanitize
+ * @return string|WP_Error Sanitized URL or WP_Error on failure
+ */
+function hbl_sanitize_input_url($url) {
+    if (empty($url)) {
+        return new WP_Error('empty_url', __('URL cannot be empty.', 'happy-business-listing'));
+    }
+    
+    $url = esc_url_raw($url);
+    if (!filter_var($url, FILTER_VALIDATE_URL)) {
+        return new WP_Error('invalid_url', __('Invalid URL format.', 'happy-business-listing'));
+    }
+    
+    return $url;
+}
+
+/**
+ * Sanitize boolean input
+ *
+ * @param mixed $value The value to sanitize
+ * @return bool Sanitized boolean value
+ */
+function hbl_sanitize_input_bool($value) {
+    if (is_bool($value)) {
+        return $value;
+    }
+    
+    if (is_string($value)) {
+        $value = strtolower(trim($value));
+        return in_array($value, ['true', '1', 'yes', 'on'], true);
+    }
+    
+    return (bool) $value;
+}
+
+/**
+ * Sanitize phone number input
+ *
+ * @param string $phone The phone number to sanitize
+ * @return string Sanitized phone number
+ */
+function hbl_sanitize_input_phone($phone) {
+    if (empty($phone)) {
+        return '';
+    }
+    
+    // Remove all characters except digits, plus sign, hyphen, parentheses, and spaces
+    $sanitized = preg_replace('/[^0-9+\-() ]/', '', $phone);
+    
+    // Ensure the number starts with a plus sign if it contains country code
+    if (preg_match('/^[0-9]/', $sanitized)) {
+        $sanitized = '+' . $sanitized;
+    }
+    
+    // Remove extra spaces
+    $sanitized = preg_replace('/\s+/', ' ', $sanitized);
+    
+    return trim($sanitized);
+}
+
+/**
+ * Validate form data
  *
  * @param array $data The form data to validate
- * @param array $rules The validation rules
- * @return array|WP_Error Sanitized data or WP_Error on failure
+ * @return array|WP_Error Validated data or WP_Error on failure
  */
-function hbl_validate_form($data, $rules) {
-    $sanitized = array();
-    $errors = array();
+function hbl_validate_form($data) {
+    $errors = new WP_Error();
+    $validated = array();
     
-    foreach ($rules as $field => $rule) {
-        $type = isset($rule['type']) ? $rule['type'] : 'text';
-        $args = isset($rule['args']) ? $rule['args'] : array();
-        
-        // Get input value
-        $value = isset($data[$field]) ? $data[$field] : '';
-        
-        // Sanitize and validate
-        $sanitized_value = hbl_sanitize_input($value, $type, $args);
-        
-        // Check for errors
-        if (is_wp_error($sanitized_value)) {
-            $errors[$field] = $sanitized_value->get_error_message();
-        } else {
-            $sanitized[$field] = $sanitized_value;
+    // Required fields
+    $required_fields = array(
+        'business_name' => __('Business Name', 'happy-business-listing'),
+        'business_email' => __('Business Email', 'happy-business-listing'),
+        'phone' => __('Phone Number', 'happy-business-listing'),
+        'website' => __('Website', 'happy-business-listing'),
+        'address' => __('Address', 'happy-business-listing')
+    );
+    
+    foreach ($required_fields as $field => $label) {
+        if (empty($data[$field])) {
+            $errors->add('empty_field', sprintf(__('%s is required.', 'happy-business-listing'), $label));
         }
     }
     
-    // Return errors if any
-    if (!empty($errors)) {
-        return new WP_Error('validation_failed', __('Validation failed.', 'happy-business-listing'), $errors);
+    // Validate email
+    if (!empty($data['business_email']) && !is_email($data['business_email'])) {
+        $errors->add('invalid_email', __('Invalid email address.', 'happy-business-listing'));
     }
     
-    return $sanitized;
+    // Validate website
+    if (!empty($data['website'])) {
+        $website = hbl_sanitize_input_url($data['website']);
+        if (is_wp_error($website)) {
+            $errors->add('invalid_website', $website->get_error_message());
+        } else {
+            $validated['website'] = $website;
+        }
+    }
+    
+    // Validate phone
+    if (!empty($data['phone'])) {
+        $validated['phone'] = hbl_sanitize_input_phone($data['phone']);
+    }
+    
+    // If there are errors, return them
+    if ($errors->has_errors()) {
+        return $errors;
+    }
+    
+    // Return validated data
+    return array_merge($data, $validated);
 }
 
 /**
