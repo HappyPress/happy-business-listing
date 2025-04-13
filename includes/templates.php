@@ -138,25 +138,6 @@ function hbl_get_template_part($slug, $name = null, $args = array()) {
  * @param mixed $default Default value if field is empty
  * @return mixed The field value
  */
-function hbl_get_business_field($field_key, $post_id = null, $default = '') {
-    if (!$post_id) {
-        $post_id = get_the_ID();
-    }
-    
-    // Try ACF first if available
-    if (function_exists('get_field')) {
-        $value = get_field($field_key, $post_id);
-        if (!empty($value)) {
-            return $value;
-        }
-    }
-    
-    // Fallback to post meta
-    $value = get_post_meta($post_id, $field_key, true);
-    
-    // Return default if empty
-    return !empty($value) ? $value : $default;
-}
 
 /**
  * Get business social media links as formatted HTML
