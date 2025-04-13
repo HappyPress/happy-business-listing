@@ -42,8 +42,7 @@ function hbl_sanitize_checkbox($input) {
  * @return string The sanitized input
  */
 function hbl_sanitize_whatsapp_integration($input) {
-    $valid_options = array('twilio', 'whatsapp_business');
-    return in_array($input, $valid_options) ? $input : 'twilio';
+    return sanitize_text_field($input);
 }
 
 /**
@@ -52,9 +51,6 @@ function hbl_sanitize_whatsapp_integration($input) {
  * @param string $input The input to sanitize
  * @return string The sanitized input
  */
-function hbl_sanitize_api_key($input) {
-    return sanitize_text_field($input);
-}
 
 /**
  * Sanitize permalink
@@ -63,7 +59,7 @@ function hbl_sanitize_api_key($input) {
  * @return string The sanitized input
  */
 function hbl_sanitize_permalink($input) {
-    return sanitize_text_field(trim($input, '/'));
+    return sanitize_title($input);
 }
 
 /**

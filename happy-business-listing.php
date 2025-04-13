@@ -18,11 +18,22 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Define plugin constants
-define('HBL_VERSION', '1.3.0');
-define('HBL_PLUGIN_DIR', plugin_dir_path(__FILE__));
-define('HBL_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('HBL_PLUGIN_BASENAME', plugin_basename(__FILE__));
+// Define plugin constants if not already defined
+if (!defined('HBL_VERSION')) {
+    define('HBL_VERSION', '1.3.0');
+}
+
+if (!defined('HBL_PLUGIN_DIR')) {
+    define('HBL_PLUGIN_DIR', plugin_dir_path(__FILE__));
+}
+
+if (!defined('HBL_PLUGIN_URL')) {
+    define('HBL_PLUGIN_URL', plugin_dir_url(__FILE__));
+}
+
+if (!defined('HBL_PLUGIN_BASENAME')) {
+    define('HBL_PLUGIN_BASENAME', plugin_basename(__FILE__));
+}
 
 /**
  * Main plugin class
