@@ -11,6 +11,72 @@ if (!defined('ABSPATH')) {
 }
 
 /**
+ * Get business field with proper fallback
+ *
+ * @param int $post_id The post ID
+ * @param string $field_name The field name
+ * @param bool $format Whether to format the value
+ * @return mixed The field value
+ */
+function hbl_get_business_field($post_id, $field_name, $format = true) {
+    $value = get_post_meta($post_id, $field_name, true);
+    
+    if (empty($value)) {
+        return '';
+    }
+    
+    if ($format) {
+        switch ($field_name) {
+            case 'phone':
+                return hbl_sanitize_phone($value);
+            case 'email':
+                return sanitize_email($value);
+            case 'website':
+                return esc_url($value);
+            case 'price':
+                return hbl_format_price($value);
+            default:
+                return esc_html($value);
+        }
+    }
+    
+    return $value;
+}
+
+/**
+ * Get business meta data
+ *
+ * @param int $post_id The post ID
+ * @return array Array of meta data
+ */
+function hbl_get_business_meta($post_id) {
+    $meta = array();
+    
+    $fields = array(
+        'phone' => __('Phone', 'happy-business-listing'),
+        'email' => __('Email', 'happy-business-listing'),
+        'website' => __('Website', 'happy-business-listing'),
+        'address' => __('Address', 'happy-business-listing'),
+        'price' => __('Price', 'happy-business-listing'),
+        'hours' => __('Hours', 'happy-business-listing'),
+        'category' => __('Category', 'happy-business-listing'),
+        'tags' => __('Tags', 'happy-business-listing')
+    );
+    
+    foreach ($fields as $field => $label) {
+        $value = hbl_get_business_field($post_id, $field);
+        if (!empty($value)) {
+            $meta[$field] = array(
+                'label' => $label,
+                'value' => $value
+            );
+        }
+    }
+    
+    return $meta;
+}
+
+/**
  * Load custom templates for business listings
  *
  * @param string $template The path of the template to include
@@ -128,39 +194,6 @@ function hbl_get_template_part($slug, $name = null, $args = array()) {
     if (file_exists($template)) {
         include $template;
     }
-}
-
-/**
- * Get business field with proper fallback
- *
- * @param string $field_key The field key to retrieve
- * @param int $post_id The post ID (optional)
- * @param mixed $default Default value if field is empty
- * @return mixed The field value
- */
-function hbl_get_business_field($post_id, $field_name, $format = true) {
-    $value = get_post_meta($post_id, $field_name, true);
-    
-    if (empty($value)) {
-        return '';
-    }
-    
-    if ($format) {
-        switch ($field_name) {
-            case 'phone':
-                return hbl_sanitize_phone($value);
-            case 'email':
-                return sanitize_email($value);
-            case 'website':
-                return esc_url($value);
-            case 'price':
-                return hbl_format_price($value);
-            default:
-                return esc_html($value);
-        }
-    }
-    
-    return $value;
 }
 
 /**
@@ -984,31 +1017,4 @@ function hbl_archive_order_callback() {
     echo '<option value="ASC" ' . selected($value, 'ASC', false) . '>' . __('Ascending', 'happy-business-listing') . '</option>';
     echo '</select>';
     echo '<p class="description">' . __('Order direction for businesses on archive pages.', 'happy-business-listing') . '</p>';
-}
-
-function hbl_get_business_meta($post_id) {
-    $meta = array();
-    
-    $fields = array(
-        'phone' => __('Phone', 'happy-business-listing'),
-        'email' => __('Email', 'happy-business-listing'),
-        'website' => __('Website', 'happy-business-listing'),
-        'address' => __('Address', 'happy-business-listing'),
-        'price' => __('Price', 'happy-business-listing'),
-        'hours' => __('Hours', 'happy-business-listing'),
-        'category' => __('Category', 'happy-business-listing'),
-        'tags' => __('Tags', 'happy-business-listing')
-    );
-    
-    foreach ($fields as $field => $label) {
-        $value = hbl_get_business_field($post_id, $field);
-        if (!empty($value)) {
-            $meta[$field] = array(
-                'label' => $label,
-                'value' => $value
-            );
-        }
-    }
-    
-    return $meta;
 }
