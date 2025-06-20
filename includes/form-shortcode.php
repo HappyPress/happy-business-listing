@@ -1296,3 +1296,374 @@ function hbl_handle_contact_form() {
 }
 add_action('admin_post_nopriv_hbl_contact_form', 'hbl_handle_contact_form');
 add_action('admin_post_hbl_contact_form', 'hbl_handle_contact_form');
+
+/**
+ * Business listing archive shortcode
+ *
+ * @param array $atts Shortcode attributes
+ * @return string The archive HTML
+ */
+function hbl_business_listing_archive_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'posts_per_page' => 12,
+        'orderby' => 'date',
+        'order' => 'DESC',
+        'show_filters' => 'true',
+        'columns' => 3
+    ), $atts);
+    
+    ob_start();
+    
+    // Get current page number
+    $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+    
+    // Build query args
+    $query_args = array(
+        'post_type' => 'business_listing',
+        'posts_per_page' => intval($atts['posts_per_page']),
+        'orderby' => $atts['orderby'],
+        'order' => $atts['order'],
+        'paged' => $paged,
+        'post_status' => 'publish'
+    );
+    
+    // Add meta query for filters if provided
+    $meta_query = array();
+    
+    if (isset($_GET['company_type']) && !empty($_GET['company_type'])) {
+        $meta_query[] = array(
+            'key' => 'company_type',
+            'value' => sanitize_text_field($_GET['company_type']),
+            'compare' => '='
+        );
+    }
+    
+    if (isset($_GET['location']) && !empty($_GET['location'])) {
+        $meta_query[] = array(
+            'key' => 'location',
+            'value' => sanitize_text_field($_GET['location']),
+            'compare' => 'LIKE'
+        );
+    }
+    
+    if (isset($_GET['verification']) && !empty($_GET['verification'])) {
+        $meta_query[] = array(
+            'key' => 'verification_status',
+            'value' => sanitize_text_field($_GET['verification']),
+            'compare' => '='
+        );
+    }
+    
+    if (!empty($meta_query)) {
+        $query_args['meta_query'] = $meta_query;
+    }
+    
+    // Add search functionality
+    if (isset($_GET['search']) && !empty($_GET['search'])) {
+        $query_args['s'] = sanitize_text_field($_GET['search']);
+    }
+    
+    $businesses_query = new WP_Query($query_args);
+    
+    ?>
+    <div class="hbl-business-archive">
+        <?php if ($atts['show_filters'] === 'true') : ?>
+            <div class="business-filters">
+                <form method="get" class="filter-form">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <input type="text" name="search" placeholder="<?php _e('Search businesses...', 'happy-business-listing'); ?>" value="<?php echo esc_attr(isset($_GET['search']) ? $_GET['search'] : ''); ?>">
+                        </div>
+                        
+                        <div class="filter-group">
+                            <select name="company_type">
+                                <option value=""><?php _e('All Types', 'happy-business-listing'); ?></option>
+                                <?php
+                                $company_types = hbl_get_unique_field_values('company_type');
+                                foreach ($company_types as $type) :
+                                ?>
+                                    <option value="<?php echo esc_attr($type); ?>" <?php selected(isset($_GET['company_type']) ? $_GET['company_type'] : '', $type); ?>><?php echo esc_html($type); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <select name="location">
+                                <option value=""><?php _e('All Locations', 'happy-business-listing'); ?></option>
+                                <?php
+                                $locations = hbl_get_unique_field_values('location');
+                                foreach ($locations as $location) :
+                                ?>
+                                    <option value="<?php echo esc_attr($location); ?>" <?php selected(isset($_GET['location']) ? $_GET['location'] : '', $location); ?>><?php echo esc_html($location); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <select name="verification">
+                                <option value=""><?php _e('All', 'happy-business-listing'); ?></option>
+                                <option value="verified" <?php selected(isset($_GET['verification']) ? $_GET['verification'] : '', 'verified'); ?>><?php _e('Verified', 'happy-business-listing'); ?></option>
+                                <option value="pending" <?php selected(isset($_GET['verification']) ? $_GET['verification'] : '', 'pending'); ?>><?php _e('Pending', 'happy-business-listing'); ?></option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-actions">
+                            <button type="submit" class="filter-button"><?php _e('Filter', 'happy-business-listing'); ?></button>
+                            <a href="<?php echo esc_url(remove_query_arg(array('search', 'company_type', 'location', 'verification'))); ?>" class="reset-button"><?php _e('Reset', 'happy-business-listing'); ?></a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        <?php endif; ?>
+        
+        <div class="business-results">
+            <?php if ($businesses_query->have_posts()) : ?>
+                <div class="results-info">
+                    <p><?php printf(_n('%d business found', '%d businesses found', $businesses_query->found_posts, 'happy-business-listing'), $businesses_query->found_posts); ?></p>
+                </div>
+                
+                <div class="business-grid columns-<?php echo esc_attr($atts['columns']); ?>">
+                    <?php while ($businesses_query->have_posts()) : $businesses_query->the_post(); ?>
+                        <div class="business-card">
+                            <a href="<?php the_permalink(); ?>" class="business-link">
+                                <?php echo hbl_get_business_image(get_the_ID(), 'medium'); ?>
+                                
+                                <div class="business-info">
+                                    <h3 class="business-title"><?php the_title(); ?></h3>
+                                    
+                                    <?php if ($verification_status = hbl_get_business_field('verification_status', get_the_ID())) : ?>
+                                        <div class="verification-badge status-<?php echo sanitize_html_class($verification_status); ?>">
+                                            <?php echo esc_html(ucfirst($verification_status)); ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <?php if ($company_type = hbl_get_business_field('company_type', get_the_ID())) : ?>
+                                        <div class="business-type">
+                                            <?php echo esc_html($company_type); ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <?php if ($location = hbl_get_business_field('location', get_the_ID())) : ?>
+                                        <div class="business-location">
+                                            <span class="dashicons dashicons-location"></span>
+                                            <?php echo esc_html($location); ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <div class="business-excerpt">
+                                        <?php echo wp_trim_words(get_the_excerpt(), 15); ?>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    <?php endwhile; ?>
+                </div>
+                
+                <?php
+                // Pagination
+                $pagination = paginate_links(array(
+                    'base' => str_replace(999999999, '%#%', esc_url(get_pagenum_link(999999999))),
+                    'format' => '?paged=%#%',
+                    'current' => max(1, get_query_var('paged')),
+                    'total' => $businesses_query->max_num_pages,
+                    'prev_text' => '&larr; ' . __('Previous', 'happy-business-listing'),
+                    'next_text' => __('Next', 'happy-business-listing') . ' &rarr;',
+                ));
+                
+                if ($pagination) :
+                ?>
+                    <div class="pagination-wrapper">
+                        <?php echo $pagination; ?>
+                    </div>
+                <?php endif; ?>
+                
+            <?php else : ?>
+                <div class="no-results">
+                    <h3><?php _e('No businesses found', 'happy-business-listing'); ?></h3>
+                    <p><?php _e('Try adjusting your search criteria or browse all businesses.', 'happy-business-listing'); ?></p>
+                    <a href="<?php echo esc_url(remove_query_arg(array('search', 'company_type', 'location', 'verification'))); ?>" class="button"><?php _e('View All Businesses', 'happy-business-listing'); ?></a>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+    
+    <style>
+    .hbl-business-archive {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .business-filters {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+    
+    .filter-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr auto;
+        gap: 15px;
+        align-items: center;
+    }
+    
+    .filter-group input,
+    .filter-group select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    
+    .filter-button,
+    .reset-button {
+        padding: 10px 20px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .filter-button {
+        background: #667eea;
+        color: white;
+    }
+    
+    .reset-button {
+        background: #6c757d;
+        color: white;
+        margin-left: 10px;
+    }
+    
+    .results-info {
+        margin-bottom: 20px;
+        color: #666;
+    }
+    
+    .business-grid {
+        display: grid;
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+    
+    .business-grid.columns-1 { grid-template-columns: 1fr; }
+    .business-grid.columns-2 { grid-template-columns: repeat(2, 1fr); }
+    .business-grid.columns-3 { grid-template-columns: repeat(3, 1fr); }
+    .business-grid.columns-4 { grid-template-columns: repeat(4, 1fr); }
+    
+    .business-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: transform 0.2s ease;
+    }
+    
+    .business-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .business-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+    
+    .business-info {
+        padding: 20px;
+    }
+    
+    .business-title {
+        margin: 0 0 10px 0;
+        font-size: 18px;
+        font-weight: 600;
+    }
+    
+    .verification-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        font-size: 12px;
+        border-radius: 12px;
+        margin-bottom: 8px;
+    }
+    
+    .verification-badge.status-verified {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .verification-badge.status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .business-type {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 8px;
+    }
+    
+    .business-location {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 10px;
+    }
+    
+    .business-location .dashicons {
+        margin-right: 5px;
+        font-size: 16px;
+    }
+    
+    .business-excerpt {
+        font-size: 14px;
+        color: #555;
+        line-height: 1.4;
+    }
+    
+    .no-results {
+        text-align: center;
+        padding: 60px 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+    
+    .pagination-wrapper {
+        text-align: center;
+        margin-top: 30px;
+    }
+    
+    @media (max-width: 768px) {
+        .filter-row {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        .business-grid.columns-2,
+        .business-grid.columns-3,
+        .business-grid.columns-4 {
+            grid-template-columns: 1fr;
+        }
+        
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .filter-button,
+        .reset-button {
+            flex: 1;
+            margin: 0;
+        }
+    }
+    </style>
+    
+    <?php
+    wp_reset_postdata();
+    
+    return ob_get_clean();
+}
+add_shortcode('business_listing_archive', 'hbl_business_listing_archive_shortcode');
