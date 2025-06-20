@@ -51,11 +51,6 @@ function hbl_sanitize_whatsapp_integration($input) {
  *
  * @param string $input The input to sanitize
  * @return string The sanitized input
- */
-function hbl_sanitize_api_key($input) {
-    return sanitize_text_field($input);
-}
-
 /**
  * Sanitize permalink
  *

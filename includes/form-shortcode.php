@@ -18,92 +18,134 @@ if (!defined('ABSPATH')) {
 function hbl_register_form_shortcode() {
     ob_start();
     ?>
-    <form id="hbl-business-registration-form" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="POST">
-        <input type="hidden" name="action" value="hbl_register_business">
-        <?php echo hbl_nonce_field('hbl_register_business'); ?>
+    <div class="hbl-business-registration-form">
+        <div class="form-header">
+            <h2><?php _e('Register Your Business', 'happy-business-listing'); ?></h2>
+            <p class="form-description"><?php _e('Join our business directory and get discovered by potential customers.', 'happy-business-listing'); ?></p>
+        </div>
         
-        <div class="form-group">
-            <label for="business_name"><?php _e('Business Name:', 'happy-business-listing'); ?></label>
-            <input type="text" name="business_name" id="business_name" required>
-        </div>
-
-        <div class="form-group">
-            <label for="company_type"><?php _e('Type of Company:', 'happy-business-listing'); ?></label>
-            <select name="company_type" id="company_type" required>
-                <option value=""><?php _e('Select Company Type', 'happy-business-listing'); ?></option>
-                <option value="Pvt Ltd"><?php _e('Pvt Ltd', 'happy-business-listing'); ?></option>
-                <option value="LLP"><?php _e('LLP', 'happy-business-listing'); ?></option>
-                <option value="OPC"><?php _e('OPC', 'happy-business-listing'); ?></option>
-                <option value="Partnership"><?php _e('Partnership', 'happy-business-listing'); ?></option>
-                <option value="Proprietorship"><?php _e('Proprietorship', 'happy-business-listing'); ?></option>
-                <option value="Other"><?php _e('Other', 'happy-business-listing'); ?></option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="gst_no"><?php _e('GST No.:', 'happy-business-listing'); ?></label>
-            <input type="text" name="gst_no" id="gst_no" required>
-        </div>
-
-        <div class="form-group">
-            <label for="tan_pan"><?php _e('TAN/PAN:', 'happy-business-listing'); ?></label>
-            <input type="text" name="tan_pan" id="tan_pan" required>
-        </div>
-
-        <div class="form-group">
-            <label for="location"><?php _e('Location/s:', 'happy-business-listing'); ?></label>
-            <input type="text" name="location" id="location" required>
-        </div>
-
-        <div class="form-group">
-            <label for="website"><?php _e('Website:', 'happy-business-listing'); ?></label>
-            <input type="url" name="website" id="website" required>
-        </div>
-
-        <div class="form-group">
-            <label for="social_media"><?php _e('Social Media:', 'happy-business-listing'); ?></label>
-            <input type="text" name="social_media" id="social_media" placeholder="<?php _e('Facebook, Twitter, Instagram, etc.', 'happy-business-listing'); ?>" required>
-        </div>
-
-        <div class="form-group">
-            <label for="whatsapp_number"><?php _e('WhatsApp Number:', 'happy-business-listing'); ?></label>
-            <input type="text" name="whatsapp_number" id="whatsapp_number" required>
-        </div>
-
-        <div class="form-group">
-            <label for="email"><?php _e('Email Address:', 'happy-business-listing'); ?></label>
-            <input type="email" name="email" id="email" required>
-        </div>
-
-        <div class="form-group">
-            <label for="contact_name"><?php _e('Contact Person:', 'happy-business-listing'); ?></label>
-            <input type="text" name="contact_name" id="contact_name" required>
-        </div>
-
-        <div class="form-group">
-            <label for="phone"><?php _e('Phone Number:', 'happy-business-listing'); ?></label>
-            <input type="tel" name="phone" id="phone" required>
-        </div>
-
-        <div class="form-group">
-            <label>
-                <input type="checkbox" name="terms_agreement" value="1" required>
-                <?php _e('I agree to the terms and conditions', 'happy-business-listing'); ?>
-            </label>
-        </div>
-
-        <?php 
-        // Add honeypot field for spam protection
-        ?>
-        <div class="form-group" style="display:none;">
-            <label for="website_url"><?php _e('Website URL:', 'happy-business-listing'); ?></label>
-            <input type="text" name="website_url" id="website_url" autocomplete="off">
-        </div>
-
-        <div class="form-actions">
-            <input type="submit" value="<?php _e('Register Business', 'happy-business-listing'); ?>" class="submit-button">
-        </div>
-    </form>
+        <form id="hbl-business-registration-form" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="POST">
+            <input type="hidden" name="action" value="hbl_register_business">
+            <?php echo hbl_nonce_field('hbl_register_business'); ?>
+            
+            <div class="form-section">
+                <h3 class="section-title"><?php _e('Basic Information', 'happy-business-listing'); ?></h3>
+                
+                <div class="form-row">
+                    <div class="form-group form-group-half">
+                        <label for="business_name"><?php _e('Business Name:', 'happy-business-listing'); ?> <span class="required">*</span></label>
+                        <input type="text" name="business_name" id="business_name" required placeholder="<?php _e('Enter your business name', 'happy-business-listing'); ?>">
+                    </div>
+                    
+                    <div class="form-group form-group-half">
+                        <label for="company_type"><?php _e('Type of Company:', 'happy-business-listing'); ?></label>
+                        <select name="company_type" id="company_type">
+                            <option value=""><?php _e('Select type', 'happy-business-listing'); ?></option>
+                            <option value="Pvt Ltd"><?php _e('Pvt Ltd', 'happy-business-listing'); ?></option>
+                            <option value="LLP"><?php _e('LLP', 'happy-business-listing'); ?></option>
+                            <option value="OPC"><?php _e('OPC', 'happy-business-listing'); ?></option>
+                            <option value="Sole Proprietorship"><?php _e('Sole Proprietorship', 'happy-business-listing'); ?></option>
+                            <option value="Partnership"><?php _e('Partnership', 'happy-business-listing'); ?></option>
+                            <option value="Other"><?php _e('Other', 'happy-business-listing'); ?></option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group form-group-half">
+                        <label for="gst_no"><?php _e('GST No.:', 'happy-business-listing'); ?></label>
+                        <input type="text" name="gst_no" id="gst_no" placeholder="<?php _e('Enter GST number', 'happy-business-listing'); ?>">
+                    </div>
+                    
+                    <div class="form-group form-group-half">
+                        <label for="tan_pan"><?php _e('TAN/PAN:', 'happy-business-listing'); ?></label>
+                        <input type="text" name="tan_pan" id="tan_pan" placeholder="<?php _e('Enter TAN/PAN', 'happy-business-listing'); ?>">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="location"><?php _e('Location/s:', 'happy-business-listing'); ?> <span class="required">*</span></label>
+                    <input type="text" name="location" id="location" required placeholder="<?php _e('Enter business location', 'happy-business-listing'); ?>">
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3 class="section-title"><?php _e('Contact Information', 'happy-business-listing'); ?></h3>
+                
+                <div class="form-row">
+                    <div class="form-group form-group-half">
+                        <label for="email"><?php _e('Business Email:', 'happy-business-listing'); ?> <span class="required">*</span></label>
+                        <input type="email" name="email" id="email" required placeholder="<?php _e('business@example.com', 'happy-business-listing'); ?>">
+                    </div>
+                    
+                    <div class="form-group form-group-half">
+                        <label for="phone"><?php _e('Phone Number:', 'happy-business-listing'); ?></label>
+                        <input type="tel" name="phone" id="phone" placeholder="<?php _e('+1 (555) 123-4567', 'happy-business-listing'); ?>">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group form-group-half">
+                        <label for="website"><?php _e('Website:', 'happy-business-listing'); ?></label>
+                        <input type="url" name="website" id="website" placeholder="<?php _e('https://www.example.com', 'happy-business-listing'); ?>">
+                    </div>
+                    
+                    <div class="form-group form-group-half">
+                        <label for="whatsapp_number"><?php _e('WhatsApp Number:', 'happy-business-listing'); ?></label>
+                        <input type="tel" name="whatsapp_number" id="whatsapp_number" placeholder="<?php _e('+1 (555) 123-4567', 'happy-business-listing'); ?>">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="social_media_handles"><?php _e('Social Media:', 'happy-business-listing'); ?></label>
+                    <input type="text" name="social_media_handles" id="social_media_handles" placeholder="<?php _e('Facebook, Instagram, Twitter handles', 'happy-business-listing'); ?>">
+                    <small class="form-help"><?php _e('Separate multiple social media handles with commas', 'happy-business-listing'); ?></small>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3 class="section-title"><?php _e('Business Description', 'happy-business-listing'); ?></h3>
+                
+                <div class="form-group">
+                    <label for="business_description"><?php _e('Tell us about your business:', 'happy-business-listing'); ?></label>
+                    <textarea name="business_description" id="business_description" rows="5" placeholder="<?php _e('Describe your business, services, and what makes you unique...', 'happy-business-listing'); ?>"></textarea>
+                </div>
+            </div>
+            
+            <?php 
+            // Add honeypot field for spam protection
+            ?>
+            <div class="form-group" style="display:none;">
+                <label for="website_url"><?php _e('Website URL:', 'happy-business-listing'); ?></label>
+                <input type="text" name="website_url" id="website_url" autocomplete="off">
+            </div>
+            
+            <div class="form-section">
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="terms_agreement" value="1" required>
+                        <span class="checkmark"></span>
+                        <?php _e('I agree to the', 'happy-business-listing'); ?> <a href="/terms" target="_blank"><?php _e('Terms and Conditions', 'happy-business-listing'); ?></a> <span class="required">*</span>
+                    </label>
+                </div>
+                
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="marketing_consent" value="1">
+                        <span class="checkmark"></span>
+                        <?php _e('I agree to receive marketing communications', 'happy-business-listing'); ?>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="submit-button">
+                    <span class="button-text"><?php _e('Submit Business Listing', 'happy-business-listing'); ?></span>
+                    <span class="button-loading" style="display:none;"><?php _e('Processing...', 'happy-business-listing'); ?></span>
+                </button>
+            </div>
+        </form>
+    </div>
     <?php
     return ob_get_clean();
 }
@@ -269,7 +311,14 @@ function hbl_handle_business_registration() {
     }
     
     // Redirect after successful registration
-    wp_redirect(home_url('/thank-you'));
+    $thank_you_page_id = get_option('hbl_thank_you_page_id');
+    if ($thank_you_page_id) {
+        $redirect_url = get_permalink($thank_you_page_id);
+    } else {
+        $redirect_url = home_url('/thank-you');
+    }
+    
+    wp_redirect($redirect_url);
     exit;
 }
 add_action('admin_post_nopriv_hbl_register_business', 'hbl_handle_business_registration');
@@ -320,27 +369,101 @@ function hbl_create_form_css() {
     
     if (!file_exists($css_file)) {
         $css = '/**
- * Happy Business Listing Forms CSS
+ * Happy Business Listing Forms CSS - Modern Design
  */
 
 .hbl-business-registration-form {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 0;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    overflow: hidden;
+}
+
+.form-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px 30px;
+    text-align: center;
+}
+
+.form-header h2 {
+    margin: 0 0 10px 0;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+.form-description {
+    margin: 0;
+    font-size: 16px;
+    opacity: 0.9;
+    line-height: 1.5;
+}
+
+form {
+    padding: 40px 30px;
+}
+
+.form-section {
+    margin-bottom: 40px;
+    padding: 0;
+}
+
+.form-section:last-of-type {
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+}
+
+.section-title:before {
+    content: "";
+    width: 4px;
+    height: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin-right: 12px;
+    border-radius: 2px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
 }
 
 .form-group {
     margin-bottom: 20px;
 }
 
+.form-group-half {
+    margin-bottom: 0;
+}
+
 .form-group label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #2d3748;
+    font-size: 14px;
+    letter-spacing: 0.025em;
+}
+
+.required {
+    color: #e53e3e;
     font-weight: 600;
-    color: #333;
 }
 
 .form-group input[type="text"],
@@ -350,45 +473,218 @@ function hbl_create_form_css() {
 .form-group select,
 .form-group textarea {
     width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
     font-size: 16px;
+    font-family: inherit;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
-.form-group input[type="checkbox"] {
-    margin-right: 10px;
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group input[type="url"]:focus,
+.form-group input[type="tel"]:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background-color: #ffffff;
 }
 
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.5;
+}
+
+.form-group select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 20 20\'%3e%3cpath stroke=\'%236b7280\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'1.5\' d=\'M6 8l4 4 4-4\'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+.form-help {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: #718096;
+    line-height: 1.4;
+}
+
+/* Checkbox Styling */
+.checkbox-group {
+    margin: 16px 0;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #4a5568;
+}
+
+.checkbox-label input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: relative;
+    top: 2px;
+    height: 18px;
+    width: 18px;
+    background-color: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 4px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.checkbox-label:hover .checkmark {
+    border-color: #667eea;
+}
+
+.checkbox-label input:checked ~ .checkmark {
+    background-color: #667eea;
+    border-color: #667eea;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 5px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-label input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Submit Button */
 .form-actions {
-    margin-top: 30px;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #e2e8f0;
+    text-align: center;
 }
 
 .submit-button {
-    background-color: #4a90e2;
-    color: #fff;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
     border: none;
-    padding: 12px 20px;
+    padding: 16px 32px;
     font-size: 16px;
-    border-radius: 4px;
+    font-weight: 600;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: all 0.2s ease;
+    min-width: 200px;
+    position: relative;
+    letter-spacing: 0.025em;
 }
 
 .submit-button:hover {
-    background-color: #3a80d2;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
 }
 
+.submit-button:active {
+    transform: translateY(0);
+}
+
+.submit-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.button-loading {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Error Styling */
 .form-error {
-    color: #dc3545;
-    font-size: 14px;
-    margin-top: 5px;
+    color: #e53e3e;
+    font-size: 13px;
+    margin-top: 6px;
+    display: block;
+    font-weight: 500;
 }
 
-/* Responsive styles */
+.form-group.has-error input,
+.form-group.has-error select,
+.form-group.has-error textarea {
+    border-color: #e53e3e;
+    box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+}
+
+/* Responsive Design */
 @media screen and (max-width: 768px) {
     .hbl-business-registration-form {
-        padding: 15px;
+        margin: 20px;
+        border-radius: 8px;
+    }
+    
+    .form-header {
+        padding: 30px 20px;
+    }
+    
+    .form-header h2 {
+        font-size: 24px;
+    }
+    
+    form {
+        padding: 30px 20px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    
+    .form-group-half {
+        margin-bottom: 20px;
+    }
+    
+    .submit-button {
+        width: 100%;
+        padding: 18px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .hbl-business-registration-form {
+        margin: 10px;
+    }
+    
+    .form-header {
+        padding: 25px 15px;
+    }
+    
+    form {
+        padding: 25px 15px;
     }
     
     .form-group input[type="text"],
@@ -397,13 +693,41 @@ function hbl_create_form_css() {
     .form-group input[type="tel"],
     .form-group select,
     .form-group textarea {
-        font-size: 14px;
+        font-size: 16px; /* Prevents zoom on iOS */
     }
-    
-    .submit-button {
-        width: 100%;
-    }
-}';
+}
+
+/* Success Messages */
+.form-success {
+    background-color: #f0fff4;
+    border: 1px solid #9ae6b4;
+    color: #276749;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+/* Loading State */
+.form-loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.form-loading:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+';
         
         // Create directory if it doesn't exist
         if (!file_exists(dirname($css_file))) {
@@ -424,29 +748,186 @@ function hbl_create_form_js() {
     
     if (!file_exists($js_file)) {
         $js = '/**
- * Happy Business Listing Forms JS
+ * Happy Business Listing Forms JS - Enhanced
  */
 
 (function($) {
     "use strict";
     
-    // Form validation
-    $("#hbl-business-registration-form").on("submit", function(e) {
+    // Initialize form enhancements
+    $(document).ready(function() {
+        initFormEnhancements();
+    });
+    
+    function initFormEnhancements() {
+        var $form = $("#hbl-business-registration-form");
+        
+        if ($form.length === 0) return;
+        
+        // Add loading functionality
+        addLoadingStates($form);
+        
+        // Add real-time validation
+        addRealTimeValidation($form);
+        
+        // Add form submission handling
+        addSubmissionHandling($form);
+        
+        // Add helpful UX enhancements
+        addUXEnhancements($form);
+    }
+    
+    function addLoadingStates($form) {
+        $form.on("submit", function() {
+            var $button = $form.find(".submit-button");
+            var $buttonText = $button.find(".button-text");
+            var $buttonLoading = $button.find(".button-loading");
+            
+            $button.prop("disabled", true);
+            $buttonText.hide();
+            $buttonLoading.show();
+            $form.addClass("form-loading");
+        });
+    }
+    
+    function addRealTimeValidation($form) {
+        // Email validation
+        $form.find("input[type=\'email\']").on("blur", function() {
+            var $field = $(this);
+            var value = $field.val().trim();
+            
+            if (value && !isValidEmail(value)) {
+                showFieldError($field, hbl_forms.email);
+            } else {
+                clearFieldError($field);
+            }
+        });
+        
+        // URL validation
+        $form.find("input[type=\'url\']").on("blur", function() {
+            var $field = $(this);
+            var value = $field.val().trim();
+            
+            if (value && !isValidURL(value)) {
+                showFieldError($field, hbl_forms.url);
+            } else {
+                clearFieldError($field);
+            }
+        });
+        
+        // Phone validation
+        $form.find("input[type=\'tel\']").on("blur", function() {
+            var $field = $(this);
+            var value = $field.val().trim();
+            
+            if (value && !isValidPhone(value)) {
+                showFieldError($field, hbl_forms.phone);
+            } else {
+                clearFieldError($field);
+            }
+        });
+        
+        // Required field validation
+        $form.find("[required]").on("blur", function() {
+            var $field = $(this);
+            
+            if (!$field.val().trim()) {
+                showFieldError($field, hbl_forms.required);
+            } else {
+                clearFieldError($field);
+            }
+        });
+    }
+    
+    function addSubmissionHandling($form) {
+        $form.on("submit", function(e) {
+            var valid = validateForm($form);
+            
+            if (!valid) {
+                e.preventDefault();
+                
+                // Reset button state
+                var $button = $form.find(".submit-button");
+                var $buttonText = $button.find(".button-text");
+                var $buttonLoading = $button.find(".button-loading");
+                
+                $button.prop("disabled", false);
+                $buttonText.show();
+                $buttonLoading.hide();
+                $form.removeClass("form-loading");
+                
+                // Scroll to first error
+                var $firstError = $form.find(".form-error").first();
+                if ($firstError.length) {
+                    $("html, body").animate({
+                        scrollTop: $firstError.closest(".form-group").offset().top - 100
+                    }, 500);
+                }
+            }
+        });
+    }
+    
+    function addUXEnhancements($form) {
+        // Auto-format phone numbers
+        $form.find("input[type=\'tel\']").on("input", function() {
+            var $field = $(this);
+            var value = $field.val().replace(/\\D/g, "");
+            
+            if (value.length >= 10) {
+                var formatted = value.replace(/(\\d{3})(\\d{3})(\\d{4})/, "($1) $2-$3");
+                $field.val(formatted);
+            }
+        });
+        
+        // Auto-correct URLs
+        $form.find("input[type=\'url\']").on("blur", function() {
+            var $field = $(this);
+            var value = $field.val().trim();
+            
+            if (value && !value.match(/^https?:\\/\\//)) {
+                $field.val("https://" + value);
+            }
+        });
+        
+        // Character counter for description
+        var $description = $form.find("#business_description");
+        if ($description.length) {
+            var $counter = $("<div class=\\"character-counter\\"></div>");
+            $description.after($counter);
+            
+            $description.on("input", function() {
+                var length = $(this).val().length;
+                var maxLength = 500;
+                var remaining = maxLength - length;
+                
+                $counter.text(remaining + " characters remaining");
+                
+                if (remaining < 50) {
+                    $counter.addClass("warning");
+                } else {
+                    $counter.removeClass("warning");
+                }
+            });
+            
+            $description.trigger("input");
+        }
+    }
+    
+    function validateForm($form) {
         var valid = true;
         var firstError = null;
         
-        // Remove existing error messages
-        $(".form-error").remove();
+        // Clear all existing errors
+        $form.find(".form-error").remove();
+        $form.find(".form-group").removeClass("has-error");
         
         // Validate required fields
-        $(this).find("[required]").each(function() {
+        $form.find("[required]").each(function() {
             var $field = $(this);
             
-            if ($field.val() === "") {
+            if (!$field.val().trim()) {
+                showFieldError($field, hbl_forms.required);
                 valid = false;
-                var errorMessage = hbl_forms.required;
-                
-                $field.after("<span class=\'form-error\'>" + errorMessage + "</span>");
                 
                 if (!firstError) {
                     firstError = $field;
@@ -455,15 +936,13 @@ function hbl_create_form_js() {
         });
         
         // Validate email fields
-        $(this).find("input[type=\'email\']").each(function() {
+        $form.find("input[type=\'email\']").each(function() {
             var $field = $(this);
-            var value = $field.val();
+            var value = $field.val().trim();
             
-            if (value !== "" && !/^[^@]+@[^@]+\.[a-z]{2,}$/i.test(value)) {
+            if (value && !isValidEmail(value)) {
+                showFieldError($field, hbl_forms.email);
                 valid = false;
-                var errorMessage = hbl_forms.email;
-                
-                $field.after("<span class=\'form-error\'>" + errorMessage + "</span>");
                 
                 if (!firstError) {
                     firstError = $field;
@@ -472,15 +951,13 @@ function hbl_create_form_js() {
         });
         
         // Validate URL fields
-        $(this).find("input[type=\'url\']").each(function() {
+        $form.find("input[type=\'url\']").each(function() {
             var $field = $(this);
-            var value = $field.val();
+            var value = $field.val().trim();
             
-            if (value !== "" && !/^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(value)) {
+            if (value && !isValidURL(value)) {
+                showFieldError($field, hbl_forms.url);
                 valid = false;
-                var errorMessage = hbl_forms.url;
-                
-                $field.after("<span class=\'form-error\'>" + errorMessage + "</span>");
                 
                 if (!firstError) {
                     firstError = $field;
@@ -489,15 +966,13 @@ function hbl_create_form_js() {
         });
         
         // Validate phone fields
-        $(this).find("input[type=\'tel\']").each(function() {
+        $form.find("input[type=\'tel\']").each(function() {
             var $field = $(this);
-            var value = $field.val();
+            var value = $field.val().trim();
             
-            if (value !== "" && !/^[0-9+\-() ]{7,}$/.test(value)) {
+            if (value && !isValidPhone(value)) {
+                showFieldError($field, hbl_forms.phone);
                 valid = false;
-                var errorMessage = hbl_forms.phone;
-                
-                $field.after("<span class=\'form-error\'>" + errorMessage + "</span>");
                 
                 if (!firstError) {
                     firstError = $field;
@@ -506,31 +981,55 @@ function hbl_create_form_js() {
         });
         
         // Validate terms checkbox
-        if ($(this).find("input[name=\'terms_agreement\']").length && !$(this).find("input[name=\'terms_agreement\']:checked").length) {
+        if (!$form.find("input[name=\'terms_agreement\']:checked").length) {
+            var $field = $form.find("input[name=\'terms_agreement\']");
+            showFieldError($field, hbl_forms.terms);
             valid = false;
-            var $field = $(this).find("input[name=\'terms_agreement\']");
-            var errorMessage = hbl_forms.terms;
-            
-            $field.parent().after("<span class=\'form-error\'>" + errorMessage + "</span>");
             
             if (!firstError) {
                 firstError = $field;
             }
         }
         
-        // If not valid, prevent form submission and scroll to first error
-        if (!valid) {
-            e.preventDefault();
-            
-            if (firstError) {
-                $("html, body").animate({
-                    scrollTop: firstError.offset().top - 100
-                }, 500);
-                
-                firstError.focus();
-            }
+        return valid;
+    }
+    
+    function showFieldError($field, message) {
+        var $group = $field.closest(".form-group");
+        $group.addClass("has-error");
+        
+        // Remove existing error
+        $group.find(".form-error").remove();
+        
+        // Add new error
+        $group.append("<span class=\\"form-error\\">" + message + "</span>");
+    }
+    
+    function clearFieldError($field) {
+        var $group = $field.closest(".form-group");
+        $group.removeClass("has-error");
+        $group.find(".form-error").remove();
+    }
+    
+    function isValidEmail(email) {
+        var re = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+        return re.test(email);
+    }
+    
+    function isValidURL(url) {
+        try {
+            new URL(url);
+            return true;
+        } catch (e) {
+            return false;
         }
-    });
+    }
+    
+    function isValidPhone(phone) {
+        var cleaned = phone.replace(/\\D/g, "");
+        return cleaned.length >= 10 && cleaned.length <= 15;
+    }
+    
 })(jQuery);';
         
         // Create directory if it doesn't exist
@@ -797,3 +1296,374 @@ function hbl_handle_contact_form() {
 }
 add_action('admin_post_nopriv_hbl_contact_form', 'hbl_handle_contact_form');
 add_action('admin_post_hbl_contact_form', 'hbl_handle_contact_form');
+
+/**
+ * Business listing archive shortcode
+ *
+ * @param array $atts Shortcode attributes
+ * @return string The archive HTML
+ */
+function hbl_business_listing_archive_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'posts_per_page' => 12,
+        'orderby' => 'date',
+        'order' => 'DESC',
+        'show_filters' => 'true',
+        'columns' => 3
+    ), $atts);
+    
+    ob_start();
+    
+    // Get current page number
+    $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+    
+    // Build query args
+    $query_args = array(
+        'post_type' => 'business_listing',
+        'posts_per_page' => intval($atts['posts_per_page']),
+        'orderby' => $atts['orderby'],
+        'order' => $atts['order'],
+        'paged' => $paged,
+        'post_status' => 'publish'
+    );
+    
+    // Add meta query for filters if provided
+    $meta_query = array();
+    
+    if (isset($_GET['company_type']) && !empty($_GET['company_type'])) {
+        $meta_query[] = array(
+            'key' => 'company_type',
+            'value' => sanitize_text_field($_GET['company_type']),
+            'compare' => '='
+        );
+    }
+    
+    if (isset($_GET['location']) && !empty($_GET['location'])) {
+        $meta_query[] = array(
+            'key' => 'location',
+            'value' => sanitize_text_field($_GET['location']),
+            'compare' => 'LIKE'
+        );
+    }
+    
+    if (isset($_GET['verification']) && !empty($_GET['verification'])) {
+        $meta_query[] = array(
+            'key' => 'verification_status',
+            'value' => sanitize_text_field($_GET['verification']),
+            'compare' => '='
+        );
+    }
+    
+    if (!empty($meta_query)) {
+        $query_args['meta_query'] = $meta_query;
+    }
+    
+    // Add search functionality
+    if (isset($_GET['search']) && !empty($_GET['search'])) {
+        $query_args['s'] = sanitize_text_field($_GET['search']);
+    }
+    
+    $businesses_query = new WP_Query($query_args);
+    
+    ?>
+    <div class="hbl-business-archive">
+        <?php if ($atts['show_filters'] === 'true') : ?>
+            <div class="business-filters">
+                <form method="get" class="filter-form">
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <input type="text" name="search" placeholder="<?php _e('Search businesses...', 'happy-business-listing'); ?>" value="<?php echo esc_attr(isset($_GET['search']) ? $_GET['search'] : ''); ?>">
+                        </div>
+                        
+                        <div class="filter-group">
+                            <select name="company_type">
+                                <option value=""><?php _e('All Types', 'happy-business-listing'); ?></option>
+                                <?php
+                                $company_types = hbl_get_unique_field_values('company_type');
+                                foreach ($company_types as $type) :
+                                ?>
+                                    <option value="<?php echo esc_attr($type); ?>" <?php selected(isset($_GET['company_type']) ? $_GET['company_type'] : '', $type); ?>><?php echo esc_html($type); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <select name="location">
+                                <option value=""><?php _e('All Locations', 'happy-business-listing'); ?></option>
+                                <?php
+                                $locations = hbl_get_unique_field_values('location');
+                                foreach ($locations as $location) :
+                                ?>
+                                    <option value="<?php echo esc_attr($location); ?>" <?php selected(isset($_GET['location']) ? $_GET['location'] : '', $location); ?>><?php echo esc_html($location); ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <select name="verification">
+                                <option value=""><?php _e('All', 'happy-business-listing'); ?></option>
+                                <option value="verified" <?php selected(isset($_GET['verification']) ? $_GET['verification'] : '', 'verified'); ?>><?php _e('Verified', 'happy-business-listing'); ?></option>
+                                <option value="pending" <?php selected(isset($_GET['verification']) ? $_GET['verification'] : '', 'pending'); ?>><?php _e('Pending', 'happy-business-listing'); ?></option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-actions">
+                            <button type="submit" class="filter-button"><?php _e('Filter', 'happy-business-listing'); ?></button>
+                            <a href="<?php echo esc_url(remove_query_arg(array('search', 'company_type', 'location', 'verification'))); ?>" class="reset-button"><?php _e('Reset', 'happy-business-listing'); ?></a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        <?php endif; ?>
+        
+        <div class="business-results">
+            <?php if ($businesses_query->have_posts()) : ?>
+                <div class="results-info">
+                    <p><?php printf(_n('%d business found', '%d businesses found', $businesses_query->found_posts, 'happy-business-listing'), $businesses_query->found_posts); ?></p>
+                </div>
+                
+                <div class="business-grid columns-<?php echo esc_attr($atts['columns']); ?>">
+                    <?php while ($businesses_query->have_posts()) : $businesses_query->the_post(); ?>
+                        <div class="business-card">
+                            <a href="<?php the_permalink(); ?>" class="business-link">
+                                <?php echo hbl_get_business_image(get_the_ID(), 'medium'); ?>
+                                
+                                <div class="business-info">
+                                    <h3 class="business-title"><?php the_title(); ?></h3>
+                                    
+                                    <?php if ($verification_status = hbl_get_business_field('verification_status', get_the_ID())) : ?>
+                                        <div class="verification-badge status-<?php echo sanitize_html_class($verification_status); ?>">
+                                            <?php echo esc_html(ucfirst($verification_status)); ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <?php if ($company_type = hbl_get_business_field('company_type', get_the_ID())) : ?>
+                                        <div class="business-type">
+                                            <?php echo esc_html($company_type); ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <?php if ($location = hbl_get_business_field('location', get_the_ID())) : ?>
+                                        <div class="business-location">
+                                            <span class="dashicons dashicons-location"></span>
+                                            <?php echo esc_html($location); ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <div class="business-excerpt">
+                                        <?php echo wp_trim_words(get_the_excerpt(), 15); ?>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    <?php endwhile; ?>
+                </div>
+                
+                <?php
+                // Pagination
+                $pagination = paginate_links(array(
+                    'base' => str_replace(999999999, '%#%', esc_url(get_pagenum_link(999999999))),
+                    'format' => '?paged=%#%',
+                    'current' => max(1, get_query_var('paged')),
+                    'total' => $businesses_query->max_num_pages,
+                    'prev_text' => '&larr; ' . __('Previous', 'happy-business-listing'),
+                    'next_text' => __('Next', 'happy-business-listing') . ' &rarr;',
+                ));
+                
+                if ($pagination) :
+                ?>
+                    <div class="pagination-wrapper">
+                        <?php echo $pagination; ?>
+                    </div>
+                <?php endif; ?>
+                
+            <?php else : ?>
+                <div class="no-results">
+                    <h3><?php _e('No businesses found', 'happy-business-listing'); ?></h3>
+                    <p><?php _e('Try adjusting your search criteria or browse all businesses.', 'happy-business-listing'); ?></p>
+                    <a href="<?php echo esc_url(remove_query_arg(array('search', 'company_type', 'location', 'verification'))); ?>" class="button"><?php _e('View All Businesses', 'happy-business-listing'); ?></a>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+    
+    <style>
+    .hbl-business-archive {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .business-filters {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+    
+    .filter-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr auto;
+        gap: 15px;
+        align-items: center;
+    }
+    
+    .filter-group input,
+    .filter-group select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    
+    .filter-button,
+    .reset-button {
+        padding: 10px 20px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .filter-button {
+        background: #667eea;
+        color: white;
+    }
+    
+    .reset-button {
+        background: #6c757d;
+        color: white;
+        margin-left: 10px;
+    }
+    
+    .results-info {
+        margin-bottom: 20px;
+        color: #666;
+    }
+    
+    .business-grid {
+        display: grid;
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+    
+    .business-grid.columns-1 { grid-template-columns: 1fr; }
+    .business-grid.columns-2 { grid-template-columns: repeat(2, 1fr); }
+    .business-grid.columns-3 { grid-template-columns: repeat(3, 1fr); }
+    .business-grid.columns-4 { grid-template-columns: repeat(4, 1fr); }
+    
+    .business-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: transform 0.2s ease;
+    }
+    
+    .business-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .business-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+    
+    .business-info {
+        padding: 20px;
+    }
+    
+    .business-title {
+        margin: 0 0 10px 0;
+        font-size: 18px;
+        font-weight: 600;
+    }
+    
+    .verification-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        font-size: 12px;
+        border-radius: 12px;
+        margin-bottom: 8px;
+    }
+    
+    .verification-badge.status-verified {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .verification-badge.status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .business-type {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 8px;
+    }
+    
+    .business-location {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 10px;
+    }
+    
+    .business-location .dashicons {
+        margin-right: 5px;
+        font-size: 16px;
+    }
+    
+    .business-excerpt {
+        font-size: 14px;
+        color: #555;
+        line-height: 1.4;
+    }
+    
+    .no-results {
+        text-align: center;
+        padding: 60px 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+    
+    .pagination-wrapper {
+        text-align: center;
+        margin-top: 30px;
+    }
+    
+    @media (max-width: 768px) {
+        .filter-row {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        .business-grid.columns-2,
+        .business-grid.columns-3,
+        .business-grid.columns-4 {
+            grid-template-columns: 1fr;
+        }
+        
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .filter-button,
+        .reset-button {
+            flex: 1;
+            margin: 0;
+        }
+    }
+    </style>
+    
+    <?php
+    wp_reset_postdata();
+    
+    return ob_get_clean();
+}
+add_shortcode('business_listing_archive', 'hbl_business_listing_archive_shortcode');

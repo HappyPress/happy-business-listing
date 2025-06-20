@@ -91,6 +91,9 @@ class Happy_Business_Listing {
         // Helper functions (must be loaded first)
         require_once HBL_PLUGIN_DIR . 'includes/helpers.php';
         
+        // Security and logging (must be loaded early)
+        require_once HBL_PLUGIN_DIR . 'includes/security.php';
+        
         // Core functionality
         require_once HBL_PLUGIN_DIR . 'includes/custom-post-types.php';
         require_once HBL_PLUGIN_DIR . 'includes/acf-fields.php';
@@ -103,6 +106,11 @@ class Happy_Business_Listing {
         require_once HBL_PLUGIN_DIR . 'includes/search-and-filters.php';
         require_once HBL_PLUGIN_DIR . 'includes/permalinks.php';
         
+        // New improvements (load after core functionality)
+        require_once HBL_PLUGIN_DIR . 'includes/rest-api.php';
+        require_once HBL_PLUGIN_DIR . 'includes/caching.php';
+        require_once HBL_PLUGIN_DIR . 'includes/accessibility.php';
+        
         // Gutenberg blocks (only if WordPress version supports it)
         if (function_exists('register_block_type')) {
             require_once HBL_PLUGIN_DIR . 'includes/gutenberg-blocks.php';
@@ -113,18 +121,7 @@ class Happy_Business_Listing {
      * Plugin activation
      */
     public function activate() {
-        // Create custom post types
-        require_once HBL_PLUGIN_DIR . 'includes/custom-post-types.php';
-        hbl_register_post_types();
-        
-        // Flush rewrite rules
-        flush_rewrite_rules();
-        
-        // Create business user role
-        require_once HBL_PLUGIN_DIR . 'includes/user-registration.php';
-        hbl_create_business_user_role();
-        
-        // Set default options
+        // Set default options first (these are safe to call)
         $default_options = array(
             'hbl_activate_blocks' => '1',
             'hbl_activate_search' => '1',
@@ -141,16 +138,82 @@ class Happy_Business_Listing {
             }
         }
         
-        // Create log file if logging is enabled
-        if (get_option('hbl_enable_logging') == '1') {
-            $log_file = WP_CONTENT_DIR . '/hbl-error.log';
-            if (!file_exists($log_file)) {
-                @file_put_contents($log_file, '');
-            }
-        }
-        
         // Add activation timestamp
         add_option('hbl_activation_time', time());
+        
+        // Create essential pages
+        $this->create_essential_pages();
+        
+        // Schedule post type registration for next init
+        add_action('init', array($this, 'delayed_activation'), 1);
+    }
+    
+    /**
+     * Create essential pages during activation
+     */
+    private function create_essential_pages() {
+        $pages = array(
+            'business_signup' => array(
+                'title' => 'Business Signup',
+                'content' => '[business_signup_form]',
+                'slug' => 'business-signup'
+            ),
+            'business_list' => array(
+                'title' => 'Business Directory',
+                'content' => '[business_listing_archive]',
+                'slug' => 'business-directory'
+            ),
+            'thank_you' => array(
+                'title' => 'Thank You',
+                'content' => '<h2>Thank you for your submission!</h2><p>Your business listing has been submitted successfully. We will review it and get back to you soon.</p><p><a href="' . home_url('/business-directory') . '">Browse Business Directory</a></p>',
+                'slug' => 'thank-you'
+            )
+        );
+        
+        foreach ($pages as $page_key => $page_data) {
+            // Check if page already exists
+            $existing_page = get_page_by_path($page_data['slug']);
+            
+            if (!$existing_page) {
+                $page_id = wp_insert_post(array(
+                    'post_title' => $page_data['title'],
+                    'post_content' => $page_data['content'],
+                    'post_name' => $page_data['slug'],
+                    'post_status' => 'publish',
+                    'post_type' => 'page',
+                    'post_author' => 1
+                ));
+                
+                if ($page_id && !is_wp_error($page_id)) {
+                    // Store page ID in options
+                    add_option('hbl_' . $page_key . '_page_id', $page_id);
+                }
+            } else {
+                // Store existing page ID
+                add_option('hbl_' . $page_key . '_page_id', $existing_page->ID);
+            }
+        }
+    }
+    
+    /**
+     * Delayed activation tasks
+     */
+    public function delayed_activation() {
+        // Create custom post types
+        if (function_exists('hbl_register_post_types')) {
+            hbl_register_post_types();
+        }
+        
+        // Create business user role
+        if (function_exists('hbl_create_business_user_role')) {
+            hbl_create_business_user_role();
+        }
+        
+        // Flush rewrite rules
+        flush_rewrite_rules();
+        
+        // Remove the action to prevent running again
+        remove_action('init', array($this, 'delayed_activation'), 1);
     }
     
     /**

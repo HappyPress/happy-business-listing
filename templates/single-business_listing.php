@@ -20,7 +20,7 @@ get_header();
                 ?>
             </header>
 
-            <?php if ($verification_status = hbl_get_business_field('verification_status')) : ?>
+            <?php if ($verification_status = hbl_get_business_field('verification_status', get_the_ID())) : ?>
                 <div class="verification-badge status-<?php echo sanitize_html_class($verification_status); ?>">
                     <?php 
                     $status_text = '';
@@ -112,7 +112,7 @@ get_header();
             );
             
             // If we have a company type, use it to find related businesses
-            if ($company_type = hbl_get_business_field('company_type')) {
+            if ($company_type = hbl_get_business_field('company_type', get_the_ID())) {
                 $related_args['meta_query'] = array(
                     array(
                         'key' => 'company_type',
