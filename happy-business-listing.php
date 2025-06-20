@@ -141,8 +141,58 @@ class Happy_Business_Listing {
         // Add activation timestamp
         add_option('hbl_activation_time', time());
         
+        // Create essential pages
+        $this->create_essential_pages();
+        
         // Schedule post type registration for next init
         add_action('init', array($this, 'delayed_activation'), 1);
+    }
+    
+    /**
+     * Create essential pages during activation
+     */
+    private function create_essential_pages() {
+        $pages = array(
+            'business_signup' => array(
+                'title' => 'Business Signup',
+                'content' => '[business_signup_form]',
+                'slug' => 'business-signup'
+            ),
+            'business_list' => array(
+                'title' => 'Business Directory',
+                'content' => '[business_listing_archive]',
+                'slug' => 'business-directory'
+            ),
+            'thank_you' => array(
+                'title' => 'Thank You',
+                'content' => '<h2>Thank you for your submission!</h2><p>Your business listing has been submitted successfully. We will review it and get back to you soon.</p><p><a href="' . home_url('/business-directory') . '">Browse Business Directory</a></p>',
+                'slug' => 'thank-you'
+            )
+        );
+        
+        foreach ($pages as $page_key => $page_data) {
+            // Check if page already exists
+            $existing_page = get_page_by_path($page_data['slug']);
+            
+            if (!$existing_page) {
+                $page_id = wp_insert_post(array(
+                    'post_title' => $page_data['title'],
+                    'post_content' => $page_data['content'],
+                    'post_name' => $page_data['slug'],
+                    'post_status' => 'publish',
+                    'post_type' => 'page',
+                    'post_author' => 1
+                ));
+                
+                if ($page_id && !is_wp_error($page_id)) {
+                    // Store page ID in options
+                    add_option('hbl_' . $page_key . '_page_id', $page_id);
+                }
+            } else {
+                // Store existing page ID
+                add_option('hbl_' . $page_key . '_page_id', $existing_page->ID);
+            }
+        }
     }
     
     /**
