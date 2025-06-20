@@ -139,6 +139,20 @@ function hbl_get_template_part($slug, $name = null, $args = array()) {
  * @return mixed The field value
  */
     
+    // Try ACF first if available
+    if (function_exists('get_field')) {
+        $value = get_field($field_key, $post_id);
+        if (!empty($value)) {
+            return $value;
+        }
+    }
+    
+    // Fallback to post meta
+    $value = get_post_meta($post_id, $field_key, true);
+    
+    // Return default if empty
+    return !empty($value) ? $value : $default;
+
 /**
  * Get business social media links as formatted HTML
  *

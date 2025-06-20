@@ -1,0 +1,131 @@
+/**
+ * Happy Business Listing Forms CSS
+ */
+
+.hbl-business-registration-form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="url"],
+.form-group input[type="tel"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.form-group input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.form-actions {
+    margin-top: 30px;
+}
+
+.submit-button {
+    background-color: #4a90e2;
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+    background-color: #3a80d2;
+}
+
+.form-error {
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* Contact Form */
+.hbl-contact-form-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.hbl-contact-form-container h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 1.5em;
+}
+
+/* Password Strength Meter */
+.password-strength-meter-result {
+    margin-top: 8px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.password-strength-meter-result.very-weak {
+    background-color: #f1adad;
+    color: #a00;
+}
+
+.password-strength-meter-result.weak {
+    background-color: #fbc5a9;
+    color: #c80;
+}
+
+.password-strength-meter-result.medium {
+    background-color: #ffe399;
+    color: #c60;
+}
+
+.password-strength-meter-result.strong {
+    background-color: #c1e1b9;
+    color: #060;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+    .hbl-business-registration-form,
+    .hbl-contact-form-container {
+        padding: 15px;
+    }
+    
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="url"],
+    .form-group input[type="tel"],
+    .form-group select,
+    .form-group textarea {
+        font-size: 14px;
+    }
+    
+    .submit-button {
+        width: 100%;
+    }
+}
