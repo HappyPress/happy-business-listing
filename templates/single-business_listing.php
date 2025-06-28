@@ -5,7 +5,7 @@
  * @package Happy_Business_Listing
  */
 
-get_header();
+// Remove get_header() for block theme compatibility
 ?>
 
 <div class="hbl-business-listing-container">
@@ -362,4 +362,6 @@ jQuery(document).ready(function($) {
 });
 </script>
 
-<?php get_footer(); ?>
+<?php 
+// Remove get_footer() for block theme compatibility
+?>
