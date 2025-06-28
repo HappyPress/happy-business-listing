@@ -54,20 +54,22 @@ function hbl_format_price($price, $currency = '') {
  * @param mixed $default Default value if field is empty
  * @return mixed The field value
  */
-function hbl_get_field($field_name, $post_id, $default = '') {
-    // Try ACF first if available
-    if (function_exists('get_field')) {
-        $value = get_field($field_name, $post_id);
-        if (!empty($value)) {
-            return $value;
+if ( ! function_exists( 'hbl_get_field' ) ) {
+    function hbl_get_field($field_name, $post_id, $default = '') {
+        // Try ACF first if available
+        if (function_exists('get_field')) {
+            $value = get_field($field_name, $post_id);
+            if (!empty($value)) {
+                return $value;
+            }
         }
+        
+        // Fallback to post meta
+        $value = get_post_meta($post_id, $field_name, true);
+        
+        // Return default if empty
+        return !empty($value) ? $value : $default;
     }
-    
-    // Fallback to post meta
-    $value = get_post_meta($post_id, $field_name, true);
-    
-    // Return default if empty
-    return !empty($value) ? $value : $default;
 }
 
 /**
@@ -95,6 +97,11 @@ function hbl_update_field($field_name, $value, $post_id) {
  * @return string Sanitized phone number
  */
 function hbl_sanitize_phone($phone) {
+    // Handle null values
+    if ($phone === null) {
+        return '';
+    }
+    
     return preg_replace('/[^0-9+\-() ]/', '', $phone);
 }
 

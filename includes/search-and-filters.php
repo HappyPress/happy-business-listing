@@ -197,24 +197,26 @@ add_shortcode('business_search', 'hbl_search_filter_shortcode');
 /**
  * Get unique meta values for a specific meta key and post type
  */
-function hbl_get_meta_values($meta_key, $post_type) {
-    global $wpdb;
-    
-    $query = $wpdb->prepare(
-        "SELECT DISTINCT pm.meta_value FROM {$wpdb->postmeta} pm
-        LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
-        WHERE pm.meta_key = %s
-        AND p.post_type = %s
-        AND p.post_status = 'publish'
-        AND pm.meta_value != ''
-        ORDER BY pm.meta_value",
-        $meta_key,
-        $post_type
-    );
-    
-    $values = $wpdb->get_col($query);
-    
-    return $values;
+if ( ! function_exists( 'hbl_get_meta_values' ) ) {
+    function hbl_get_meta_values($meta_key, $post_type) {
+        global $wpdb;
+        
+        $query = $wpdb->prepare(
+            "SELECT DISTINCT pm.meta_value FROM {$wpdb->postmeta} pm
+            LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+            WHERE pm.meta_key = %s
+            AND p.post_type = %s
+            AND p.post_status = 'publish'
+            AND pm.meta_value != ''
+            ORDER BY pm.meta_value",
+            $meta_key,
+            $post_type
+        );
+        
+        $values = $wpdb->get_col($query);
+        
+        return $values;
+    }
 }
 
 /**

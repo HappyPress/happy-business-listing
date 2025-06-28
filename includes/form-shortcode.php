@@ -1423,7 +1423,7 @@ function hbl_business_listing_archive_shortcode($atts) {
     
     ?>
     <div class="hbl-business-archive">
-        <?php if ($atts['show_filters'] === 'true') : ?>
+        <?php if ($atts['show_filters'] === 'true' && !(get_option('hbl_use_hsf_filters') == '1' && function_exists('hsf_save_filter'))) : ?>
             <div class="business-filters">
                 <form method="get" class="filter-form">
                     <div class="filter-row">

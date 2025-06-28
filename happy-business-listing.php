@@ -83,6 +83,7 @@ class Happy_Business_Listing {
         
         // Add admin notices for missing dependencies
         add_action('admin_notices', array($this, 'check_dependencies'));
+        add_action('admin_notices', array($this, 'hsf_dependency_notice'));
     }
     
     /**
@@ -126,6 +127,7 @@ class Happy_Business_Listing {
         $default_options = array(
             'hbl_activate_blocks' => '1',
             'hbl_activate_search' => '1',
+            'hbl_use_hsf_filters' => '0',
             'hbl_enable_logging' => '0',
             'hbl_whatsapp_integration' => 'twilio',
             'hbl_single_permalink_structure' => 'business/%postname%',
@@ -278,6 +280,15 @@ class Happy_Business_Listing {
                 <p><?php _e('Sub-site creation is enabled but WordPress is not in multisite mode. Sub-site creation will be skipped.', 'happy-business-listing'); ?></p>
             </div>
             <?php
+        }
+    }
+    
+    /**
+     * Show admin notice if Advanced Filters enabled but HSF plugin inactive.
+     */
+    public function hsf_dependency_notice() {
+        if ( get_option( 'hbl_use_hsf_filters' ) == '1' && ! function_exists( 'hsf_save_filter' ) ) {
+            echo '<div class="notice notice-warning is-dismissible"><p>' . esc_html__( 'Happy Search & Filter plugin is required to use Advanced Search Filters. Please install and activate it or disable the option in Business Listing → Settings.', 'happy-business-listing' ) . '</p></div>';
         }
     }
 }

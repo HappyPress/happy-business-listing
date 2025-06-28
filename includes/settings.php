@@ -14,8 +14,9 @@ if (!defined('ABSPATH')) {
  * Register settings and add options page
  */
 function hbl_register_settings() {
-    register_setting('hbl_options_group', 'hbl_activate_search', 'hbl_sanitize_checkbox');
+    register_setting('hbl_options_group', 'hbl_activate_search', 'hbl_sanitize_filter_options');
     register_setting('hbl_options_group', 'hbl_activate_blocks', 'hbl_sanitize_checkbox');
+    register_setting('hbl_options_group', 'hbl_use_hsf_filters', 'hbl_sanitize_advanced_filter_options');
     register_setting('hbl_options_group', 'hbl_whatsapp_integration', 'hbl_sanitize_whatsapp_integration');
     register_setting('hbl_options_group', 'hbl_twilio_api', 'hbl_sanitize_api_key');
     register_setting('hbl_options_group', 'hbl_whatsapp_business_api', 'hbl_sanitize_api_key');
@@ -33,6 +34,38 @@ add_action('admin_init', 'hbl_register_settings');
  */
 function hbl_sanitize_checkbox($input) {
     return isset($input) ? '1' : '0';
+}
+
+/**
+ * Sanitize filter options to ensure mutual exclusivity
+ *
+ * @param mixed $input The input to sanitize
+ * @return string '1' if checked, '0' if not
+ */
+function hbl_sanitize_filter_options($input) {
+    // If this is the basic filters option being enabled
+    if (isset($input) && $input == '1') {
+        // Disable advanced filters
+        update_option('hbl_use_hsf_filters', '0');
+        return '1';
+    }
+    return '0';
+}
+
+/**
+ * Sanitize advanced filter options to ensure mutual exclusivity
+ *
+ * @param mixed $input The input to sanitize
+ * @return string '1' if checked, '0' if not
+ */
+function hbl_sanitize_advanced_filter_options($input) {
+    // If this is the advanced filters option being enabled
+    if (isset($input) && $input == '1') {
+        // Disable basic filters
+        update_option('hbl_activate_search', '0');
+        return '1';
+    }
+    return '0';
 }
 
 /**
@@ -130,14 +163,28 @@ function hbl_display_general_tab() {
             <div class="hbl-settings-section">
                 <h2><?php _e('General Settings', 'happy-business-listing'); ?></h2>
                 <div class="hbl-setting-item">
-                    <label for="hbl_activate_search"><?php _e('Search and Filters', 'happy-business-listing'); ?></label>
+                    <label for="hbl_activate_search"><?php _e('Basic Filters (HBL)', 'happy-business-listing'); ?></label>
                     <label class="switch">
                         <input type="checkbox" id="hbl_activate_search" name="hbl_activate_search" value="1" <?php checked(1, get_option('hbl_activate_search'), true); ?>>
                         <span class="slider round"></span>
                     </label>
+                    <p class="description"><?php _e('Enable basic search and filter functionality built into HBL.', 'happy-business-listing'); ?></p>
                     <?php
                     if (get_option('hbl_activate_search') == 1 && !is_plugin_active('happy-search-and-filter/happy-search-and-filter.php')) {
                         echo '<p class="description error">' . __('Please install and activate the Happy Search and Filter plugin.', 'happy-business-listing') . '</p>';
+                    }
+                    ?>
+                </div>
+                <div class="hbl-setting-item">
+                    <label for="hbl_use_hsf_filters"><strong><?php _e('Advanced Search Filters (HSF)', 'happy-business-listing'); ?></strong></label>
+                    <label class="switch">
+                        <input type="checkbox" id="hbl_use_hsf_filters" name="hbl_use_hsf_filters" value="1" <?php checked(1, get_option('hbl_use_hsf_filters'), true); ?>>
+                        <span class="slider round"></span>
+                    </label>
+                    <p class="description"><?php _e('Enable advanced search and filter functionality with Gutenberg blocks and saved filters.', 'happy-business-listing'); ?></p>
+                    <?php
+                    if ( get_option( 'hbl_use_hsf_filters' ) == '1' && ! function_exists( 'hsf_save_filter' ) ) {
+                        echo '<p class="description error">' . __( 'Happy Search & Filter plugin is required for Advanced Filters. Please install and activate it.', 'happy-business-listing' ) . '</p>';
                     }
                     ?>
                 </div>
@@ -147,6 +194,7 @@ function hbl_display_general_tab() {
                         <input type="checkbox" id="hbl_activate_blocks" name="hbl_activate_blocks" value="1" <?php checked(1, get_option('hbl_activate_blocks'), true); ?>>
                         <span class="slider round"></span>
                     </label>
+                    <p class="description"><?php _e('Enable custom Gutenberg blocks for business listings.', 'happy-business-listing'); ?></p>
                 </div>
                 <div class="hbl-setting-item">
                     <label for="hbl_enable_logging"><?php _e('Enable Error Logging', 'happy-business-listing'); ?></label>
@@ -154,6 +202,7 @@ function hbl_display_general_tab() {
                         <input type="checkbox" id="hbl_enable_logging" name="hbl_enable_logging" value="1" <?php checked(1, get_option('hbl_enable_logging'), true); ?>>
                         <span class="slider round"></span>
                     </label>
+                    <p class="description"><?php _e('Log errors and debugging information to help troubleshoot issues.', 'happy-business-listing'); ?></p>
                 </div>
             </div>
             <div class="hbl-settings-section">
@@ -161,6 +210,20 @@ function hbl_display_general_tab() {
         </div>
         <?php submit_button(__('Save Settings', 'happy-business-listing'), 'primary', 'submit', false, ['class' => 'hbl-submit-button']); ?>
     </form>
+    
+    <script>
+    jQuery(document).ready(function($) {
+        // Make filter options mutually exclusive
+        $('#hbl_activate_search, #hbl_use_hsf_filters').on('change', function() {
+            var $this = $(this);
+            var $other = $this.attr('id') === 'hbl_activate_search' ? $('#hbl_use_hsf_filters') : $('#hbl_activate_search');
+            
+            if ($this.is(':checked')) {
+                $other.prop('checked', false);
+            }
+        });
+    });
+    </script>
     <?php
 }
 
