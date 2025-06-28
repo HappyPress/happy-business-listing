@@ -24,10 +24,10 @@ function hbl_register_form_shortcode() {
             <p class="form-description"><?php _e('Join our business directory and get discovered by potential customers.', 'happy-business-listing'); ?></p>
         </div>
         
-        <form id="hbl-business-registration-form" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="POST">
-            <input type="hidden" name="action" value="hbl_register_business">
-            <?php echo hbl_nonce_field('hbl_register_business'); ?>
-            
+    <form id="hbl-business-registration-form" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="POST">
+        <input type="hidden" name="action" value="hbl_register_business">
+        <?php echo hbl_nonce_field('hbl_register_business'); ?>
+        
             <div class="form-section">
                 <h3 class="section-title"><?php _e('Basic Information', 'happy-business-listing'); ?></h3>
                 
@@ -35,40 +35,40 @@ function hbl_register_form_shortcode() {
                     <div class="form-group form-group-half">
                         <label for="business_name"><?php _e('Business Name:', 'happy-business-listing'); ?> <span class="required">*</span></label>
                         <input type="text" name="business_name" id="business_name" required placeholder="<?php _e('Enter your business name', 'happy-business-listing'); ?>">
-                    </div>
-                    
+        </div>
+
                     <div class="form-group form-group-half">
-                        <label for="company_type"><?php _e('Type of Company:', 'happy-business-listing'); ?></label>
+            <label for="company_type"><?php _e('Type of Company:', 'happy-business-listing'); ?></label>
                         <select name="company_type" id="company_type">
                             <option value=""><?php _e('Select type', 'happy-business-listing'); ?></option>
-                            <option value="Pvt Ltd"><?php _e('Pvt Ltd', 'happy-business-listing'); ?></option>
-                            <option value="LLP"><?php _e('LLP', 'happy-business-listing'); ?></option>
-                            <option value="OPC"><?php _e('OPC', 'happy-business-listing'); ?></option>
+                <option value="Pvt Ltd"><?php _e('Pvt Ltd', 'happy-business-listing'); ?></option>
+                <option value="LLP"><?php _e('LLP', 'happy-business-listing'); ?></option>
+                <option value="OPC"><?php _e('OPC', 'happy-business-listing'); ?></option>
                             <option value="Sole Proprietorship"><?php _e('Sole Proprietorship', 'happy-business-listing'); ?></option>
-                            <option value="Partnership"><?php _e('Partnership', 'happy-business-listing'); ?></option>
-                            <option value="Other"><?php _e('Other', 'happy-business-listing'); ?></option>
-                        </select>
+                <option value="Partnership"><?php _e('Partnership', 'happy-business-listing'); ?></option>
+                <option value="Other"><?php _e('Other', 'happy-business-listing'); ?></option>
+            </select>
                     </div>
-                </div>
-                
+        </div>
+
                 <div class="form-row">
                     <div class="form-group form-group-half">
-                        <label for="gst_no"><?php _e('GST No.:', 'happy-business-listing'); ?></label>
+            <label for="gst_no"><?php _e('GST No.:', 'happy-business-listing'); ?></label>
                         <input type="text" name="gst_no" id="gst_no" placeholder="<?php _e('Enter GST number', 'happy-business-listing'); ?>">
-                    </div>
-                    
+        </div>
+
                     <div class="form-group form-group-half">
-                        <label for="tan_pan"><?php _e('TAN/PAN:', 'happy-business-listing'); ?></label>
+            <label for="tan_pan"><?php _e('TAN/PAN:', 'happy-business-listing'); ?></label>
                         <input type="text" name="tan_pan" id="tan_pan" placeholder="<?php _e('Enter TAN/PAN', 'happy-business-listing'); ?>">
-                    </div>
-                </div>
-                
-                <div class="form-group">
+        </div>
+        </div>
+
+        <div class="form-group">
                     <label for="location"><?php _e('Location/s:', 'happy-business-listing'); ?> <span class="required">*</span></label>
                     <input type="text" name="location" id="location" required placeholder="<?php _e('Enter business location', 'happy-business-listing'); ?>">
                 </div>
-            </div>
-            
+        </div>
+
             <div class="form-section">
                 <h3 class="section-title"><?php _e('Contact Information', 'happy-business-listing'); ?></h3>
                 
@@ -76,49 +76,49 @@ function hbl_register_form_shortcode() {
                     <div class="form-group form-group-half">
                         <label for="email"><?php _e('Business Email:', 'happy-business-listing'); ?> <span class="required">*</span></label>
                         <input type="email" name="email" id="email" required placeholder="<?php _e('business@example.com', 'happy-business-listing'); ?>">
-                    </div>
-                    
+        </div>
+
                     <div class="form-group form-group-half">
                         <label for="phone"><?php _e('Phone Number:', 'happy-business-listing'); ?></label>
                         <input type="tel" name="phone" id="phone" placeholder="<?php _e('+1 (555) 123-4567', 'happy-business-listing'); ?>">
                     </div>
-                </div>
-                
+        </div>
+
                 <div class="form-row">
                     <div class="form-group form-group-half">
                         <label for="website"><?php _e('Website:', 'happy-business-listing'); ?></label>
                         <input type="url" name="website" id="website" placeholder="<?php _e('https://www.example.com', 'happy-business-listing'); ?>">
-                    </div>
-                    
+        </div>
+
                     <div class="form-group form-group-half">
                         <label for="whatsapp_number"><?php _e('WhatsApp Number:', 'happy-business-listing'); ?></label>
                         <input type="tel" name="whatsapp_number" id="whatsapp_number" placeholder="<?php _e('+1 (555) 123-4567', 'happy-business-listing'); ?>">
                     </div>
-                </div>
-                
-                <div class="form-group">
+        </div>
+
+        <div class="form-group">
                     <label for="social_media_handles"><?php _e('Social Media:', 'happy-business-listing'); ?></label>
                     <input type="text" name="social_media_handles" id="social_media_handles" placeholder="<?php _e('Facebook, Instagram, Twitter handles', 'happy-business-listing'); ?>">
                     <small class="form-help"><?php _e('Separate multiple social media handles with commas', 'happy-business-listing'); ?></small>
                 </div>
-            </div>
+        </div>
             
             <div class="form-section">
                 <h3 class="section-title"><?php _e('Business Description', 'happy-business-listing'); ?></h3>
-                
-                <div class="form-group">
+
+        <div class="form-group">
                     <label for="business_description"><?php _e('Tell us about your business:', 'happy-business-listing'); ?></label>
                     <textarea name="business_description" id="business_description" rows="5" placeholder="<?php _e('Describe your business, services, and what makes you unique...', 'happy-business-listing'); ?>"></textarea>
                 </div>
-            </div>
-            
-            <?php 
-            // Add honeypot field for spam protection
-            ?>
-            <div class="form-group" style="display:none;">
-                <label for="website_url"><?php _e('Website URL:', 'happy-business-listing'); ?></label>
-                <input type="text" name="website_url" id="website_url" autocomplete="off">
-            </div>
+        </div>
+
+        <?php 
+        // Add honeypot field for spam protection
+        ?>
+        <div class="form-group" style="display:none;">
+            <label for="website_url"><?php _e('Website URL:', 'happy-business-listing'); ?></label>
+            <input type="text" name="website_url" id="website_url" autocomplete="off">
+        </div>
             
             <div class="form-section">
                 <div class="form-group checkbox-group">
@@ -137,14 +137,14 @@ function hbl_register_form_shortcode() {
                     </label>
                 </div>
             </div>
-            
-            <div class="form-actions">
+
+        <div class="form-actions">
                 <button type="submit" class="submit-button">
                     <span class="button-text"><?php _e('Submit Business Listing', 'happy-business-listing'); ?></span>
                     <span class="button-loading" style="display:none;"><?php _e('Processing...', 'happy-business-listing'); ?></span>
                 </button>
-            </div>
-        </form>
+        </div>
+    </form>
     </div>
     <?php
     return ob_get_clean();
@@ -1022,8 +1022,8 @@ function hbl_create_form_js() {
             return true;
         } catch (e) {
             return false;
+            }
         }
-    }
     
     function isValidPhone(phone) {
         var cleaned = phone.replace(/\\D/g, "");
@@ -1240,21 +1240,19 @@ function hbl_handle_contact_form() {
     
     // Send email notification
     $to = $business_email;
-    $subject = sprintf(__('[%s] New Contact Form Submission: %s', 'happy-business-listing'), get_bloginfo('name'), $sanitized['contact_subject']);
+    $subject = sprintf(__('New Enquiry for %s', 'happy-business-listing'), get_the_title($business_id));
     
-    $message = sprintf(__('You have received a new contact form submission from your business listing on %s.', 'happy-business-listing'), get_bloginfo('name')) . "\n\n";
-    $message .= sprintf(__('Business: %s', 'happy-business-listing'), $business->post_title) . "\n";
-    $message .= sprintf(__('Name: %s', 'happy-business-listing'), $sanitized['contact_name']) . "\n";
-    $message .= sprintf(__('Email: %s', 'happy-business-listing'), $sanitized['contact_email']) . "\n";
+    $message_body = sprintf(__('You have received a new enquiry from %s:', 'happy-business-listing'), $sanitized['contact_name']) . "\n\n";
+    $message_body .= __('Name:', 'happy-business-listing') . ' ' . $sanitized['contact_name'] . "\n";
+    $message_body .= __('Email:', 'happy-business-listing') . ' ' . $sanitized['contact_email'] . "\n";
     
     if (!empty($sanitized['contact_phone'])) {
-        $message .= sprintf(__('Phone: %s', 'happy-business-listing'), $sanitized['contact_phone']) . "\n";
+        $message_body .= __('Phone:', 'happy-business-listing') . ' ' . $sanitized['contact_phone'] . "\n";
     }
     
-    $message .= sprintf(__('Subject: %s', 'happy-business-listing'), $sanitized['contact_subject']) . "\n\n";
-    $message .= sprintf(__('Message:', 'happy-business-listing')) . "\n";
-    $message .= $sanitized['contact_message'] . "\n\n";
-    $message .= sprintf(__('You can view and manage all leads in your dashboard: %s', 'happy-business-listing'), admin_url('edit.php?post_type=business_lead')) . "\n";
+    $message_body .= "\n" . __('Subject:', 'happy-business-listing') . "\n" . $sanitized['contact_subject'] . "\n\n";
+    $message_body .= __('Message:', 'happy-business-listing') . "\n" . $sanitized['contact_message'] . "\n\n";
+    $message_body .= __('You can view and manage all leads in your dashboard.', 'happy-business-listing') . "\n";
     
     $headers = array(
         'Content-Type: text/plain; charset=UTF-8',
@@ -1262,7 +1260,7 @@ function hbl_handle_contact_form() {
         'Reply-To: ' . $sanitized['contact_name'] . ' <' . $sanitized['contact_email'] . '>'
     );
     
-    $email_sent = wp_mail($to, $subject, $message, $headers);
+    $email_sent = wp_mail($to, $subject, $message_body, $headers);
     
     if (!$email_sent) {
         // Log error but don't show to user
@@ -1296,6 +1294,35 @@ function hbl_handle_contact_form() {
 }
 add_action('admin_post_nopriv_hbl_contact_form', 'hbl_handle_contact_form');
 add_action('admin_post_hbl_contact_form', 'hbl_handle_contact_form');
+
+/**
+ * AJAX: return service_product title suggestions for autocomplete
+ */
+function hbl_product_suggestions_ajax() {
+    $term   = isset($_GET['term']) ? sanitize_text_field($_GET['term']) : '';
+    $output = array();
+
+    if ($term !== '') {
+        $suggest_q = new WP_Query(array(
+            'post_type'      => 'service_product',
+            's'              => $term,
+            'posts_per_page' => 10,
+            'fields'         => 'ids',
+        ));
+
+        foreach ($suggest_q->posts as $pid) {
+            $title     = get_the_title($pid);
+            $output[] = array(
+                'label' => $title,
+                'value' => $title,
+            );
+        }
+    }
+
+    wp_send_json($output);
+}
+add_action('wp_ajax_hbl_product_suggestions', 'hbl_product_suggestions_ajax');
+add_action('wp_ajax_nopriv_hbl_product_suggestions', 'hbl_product_suggestions_ajax');
 
 /**
  * Business listing archive shortcode
@@ -1357,12 +1384,41 @@ function hbl_business_listing_archive_shortcode($atts) {
     if (!empty($meta_query)) {
         $query_args['meta_query'] = $meta_query;
     }
-    
-    // Add search functionality
+
+    // Filter by product/service keyword
+    if (isset($_GET['product']) && !empty($_GET['product'])) {
+        $product_keyword = sanitize_text_field($_GET['product']);
+        $matching_products = get_posts(array(
+            'post_type' => 'service_product',
+            'posts_per_page' => -1,
+            's' => $product_keyword,
+            'fields' => 'ids',
+        ));
+        if ($matching_products) {
+            $business_ids = array();
+            foreach ($matching_products as $mpid) {
+                $bid = get_post_meta($mpid, 'business_id', true);
+                if ($bid) {
+                    $business_ids[] = intval($bid);
+                }
+            }
+            if ($business_ids) {
+                $query_args['post__in'] = array_unique($business_ids);
+            } else {
+                $query_args['post__in'] = array(0); // no match
+            }
+        } else {
+            $query_args['post__in'] = array(0);
+        }
+    }
+
+    // Add global search functionality
     if (isset($_GET['search']) && !empty($_GET['search'])) {
         $query_args['s'] = sanitize_text_field($_GET['search']);
     }
     
+    // ensure autocomplete assets
+    wp_enqueue_script('jquery-ui-autocomplete');
     $businesses_query = new WP_Query($query_args);
     
     ?>
@@ -1400,6 +1456,10 @@ function hbl_business_listing_archive_shortcode($atts) {
                         </div>
                         
                         <div class="filter-group">
+                            <input type="text" id="hbl-product-input" name="product" placeholder="<?php _e('Product / Service', 'happy-business-listing'); ?>" value="<?php echo esc_attr(isset($_GET['product']) ? $_GET['product'] : ''); ?>" autocomplete="off">
+                        </div>
+                        
+                        <div class="filter-group">
                             <select name="verification">
                                 <option value=""><?php _e('All', 'happy-business-listing'); ?></option>
                                 <option value="verified" <?php selected(isset($_GET['verification']) ? $_GET['verification'] : '', 'verified'); ?>><?php _e('Verified', 'happy-business-listing'); ?></option>
@@ -1409,7 +1469,7 @@ function hbl_business_listing_archive_shortcode($atts) {
                         
                         <div class="filter-actions">
                             <button type="submit" class="filter-button"><?php _e('Filter', 'happy-business-listing'); ?></button>
-                            <a href="<?php echo esc_url(remove_query_arg(array('search', 'company_type', 'location', 'verification'))); ?>" class="reset-button"><?php _e('Reset', 'happy-business-listing'); ?></a>
+                            <a href="<?php echo esc_url(remove_query_arg(array('search', 'company_type', 'location', 'verification', 'product'))); ?>" class="reset-button"><?php _e('Reset', 'happy-business-listing'); ?></a>
                         </div>
                     </div>
                 </form>
@@ -1481,7 +1541,7 @@ function hbl_business_listing_archive_shortcode($atts) {
                 <div class="no-results">
                     <h3><?php _e('No businesses found', 'happy-business-listing'); ?></h3>
                     <p><?php _e('Try adjusting your search criteria or browse all businesses.', 'happy-business-listing'); ?></p>
-                    <a href="<?php echo esc_url(remove_query_arg(array('search', 'company_type', 'location', 'verification'))); ?>" class="button"><?php _e('View All Businesses', 'happy-business-listing'); ?></a>
+                    <a href="<?php echo esc_url(remove_query_arg(array('search', 'company_type', 'location', 'verification', 'product'))); ?>" class="button"><?php _e('View All Businesses', 'happy-business-listing'); ?></a>
                 </div>
             <?php endif; ?>
         </div>
@@ -1661,9 +1721,257 @@ function hbl_business_listing_archive_shortcode($atts) {
     }
     </style>
     
+    <script>
+    jQuery(function($){
+      var $input = $('#hbl-product-input');
+      if($input.length && $.ui && $.ui.autocomplete){
+        $input.autocomplete({
+          minLength: 2,
+          source: function(request, response){
+            $.getJSON('<?php echo admin_url('admin-ajax.php'); ?>', { action: 'hbl_product_suggestions', term: request.term }, response);
+          }
+        });
+      }
+    });
+    </script>
     <?php
     wp_reset_postdata();
     
     return ob_get_clean();
 }
 add_shortcode('business_listing_archive', 'hbl_business_listing_archive_shortcode');
+
+/**
+ * Handle enquiry form submission via AJAX
+ */
+function hbl_submit_enquiry_ajax() {
+    // Check nonce
+    if (!isset($_POST['hbl_enquiry_nonce']) || !wp_verify_nonce($_POST['hbl_enquiry_nonce'], 'hbl_enquiry_nonce')) {
+        wp_send_json_error(array(
+            'message' => __('Security check failed. Please refresh the page and try again.', 'happy-business-listing')
+        ));
+    }
+    
+    // Honeypot check for anti-spam
+    if (!empty($_POST['website'])) {
+        wp_send_json_error(array(
+            'message' => __('Form submission failed.', 'happy-business-listing')
+        ));
+    }
+    
+    // Get form data
+    $business_id = isset($_POST['business_id']) ? absint($_POST['business_id']) : 0;
+    $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
+    $name = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '';
+    $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+    $phone = isset($_POST['phone']) ? sanitize_text_field($_POST['phone']) : '';
+    $message = isset($_POST['message']) ? sanitize_textarea_field($_POST['message']) : '';
+    $quantity = isset($_POST['quantity']) ? absint($_POST['quantity']) : 1;
+    
+    // Validate required fields
+    if (empty($business_id) || empty($name) || empty($email) || empty($message)) {
+        wp_send_json_error(array(
+            'message' => __('Please fill in all required fields.', 'happy-business-listing')
+        ));
+    }
+    
+    // Validate email
+    if (!is_email($email)) {
+        wp_send_json_error(array(
+            'message' => __('Please enter a valid email address.', 'happy-business-listing')
+        ));
+    }
+    
+    // Validate business exists
+    $business = get_post($business_id);
+    if (!$business || $business->post_type !== 'business_listing') {
+        wp_send_json_error(array(
+            'message' => __('Invalid business selected.', 'happy-business-listing')
+        ));
+    }
+    
+    // Validate product if provided
+    if ($product_id > 0) {
+        $product = get_post($product_id);
+        if (!$product || $product->post_type !== 'service_product') {
+            wp_send_json_error(array(
+                'message' => __('Invalid product selected.', 'happy-business-listing')
+            ));
+        }
+        
+        // Check if product belongs to business
+        $product_business_id = get_post_meta($product_id, 'business_id', true);
+        if ($product_business_id != $business_id) {
+            wp_send_json_error(array(
+                'message' => __('Invalid product selected.', 'happy-business-listing')
+            ));
+        }
+    }
+    
+    // Rate limiting
+    if (hbl_is_rate_limited('enquiry_submission', 5, 300)) { // 5 submissions per 5 minutes
+        wp_send_json_error(array(
+            'message' => __('Too many submissions. Please try again later.', 'happy-business-listing')
+        ));
+    }
+    
+    // Create lead post
+    $lead_data = array(
+        'post_title' => sprintf(__('Enquiry from %s', 'happy-business-listing'), $name),
+        'post_type' => 'lead',
+        'post_status' => 'private',
+        'meta_input' => array(
+            'business_id' => $business_id,
+            'product_id' => $product_id,
+            'name' => $name,
+            'email' => $email,
+            'phone' => $phone,
+            'message' => $message,
+            'quantity' => $quantity,
+            'date' => current_time('mysql'),
+            'status' => 'new',
+            'ip_address' => hbl_get_client_ip()
+        )
+    );
+    
+    $lead_id = wp_insert_post($lead_data);
+    
+    if (is_wp_error($lead_id)) {
+        wp_send_json_error(array(
+            'message' => __('Failed to submit enquiry. Please try again later.', 'happy-business-listing')
+        ));
+    }
+    
+    // Get business owner email
+    $business_email = get_post_meta($business_id, 'email', true);
+    $admin_email = get_option('admin_email');
+    
+    // Send email notification to business owner
+    if (!empty($business_email)) {
+        $subject = sprintf(__('New Enquiry for %s', 'happy-business-listing'), get_the_title($business_id));
+        
+        $message_body = sprintf(__('You have received a new enquiry from %s:', 'happy-business-listing'), $name) . "\n\n";
+        $message_body .= __('Name:', 'happy-business-listing') . ' ' . $name . "\n";
+        $message_body .= __('Email:', 'happy-business-listing') . ' ' . $email . "\n";
+        
+        if (!empty($phone)) {
+            $message_body .= __('Phone:', 'happy-business-listing') . ' ' . $phone . "\n";
+        }
+        
+        if ($product_id > 0) {
+            $message_body .= __('Product:', 'happy-business-listing') . ' ' . get_the_title($product_id) . "\n";
+        }
+        
+        $message_body .= "\n" . __('Message:', 'happy-business-listing') . "\n" . $message . "\n\n";
+        $message_body .= __('You can view and manage all leads in your dashboard.', 'happy-business-listing') . "\n";
+        
+        wp_mail($business_email, $subject, $message_body);
+        
+        // Send copy to admin
+        wp_mail($admin_email, sprintf(__('[Copy] New Enquiry for %s', 'happy-business-listing'), get_the_title($business_id)), $message_body);
+    }
+    
+    // Send WhatsApp notification if enabled
+    if (function_exists('hbl_send_whatsapp_notification')) {
+        $whatsapp_number = get_post_meta($business_id, 'whatsapp_number', true);
+        
+        if (!empty($whatsapp_number)) {
+            $whatsapp_message = sprintf(__('New Enquiry from %s', 'happy-business-listing'), $name) . "\n\n";
+            $whatsapp_message .= __('Email:', 'happy-business-listing') . ' ' . $email . "\n";
+            
+            if (!empty($phone)) {
+                $whatsapp_message .= __('Phone:', 'happy-business-listing') . ' ' . $phone . "\n";
+            }
+            
+            if ($product_id > 0) {
+                $whatsapp_message .= __('Product:', 'happy-business-listing') . ' ' . get_the_title($product_id) . "\n";
+            }
+            
+            $whatsapp_message .= "\n" . __('Message:', 'happy-business-listing') . "\n" . $message;
+            
+            hbl_send_whatsapp_notification($whatsapp_number, $whatsapp_message);
+        }
+    }
+    
+    // Clear cache for leads
+    if (class_exists('HBL_Cache')) {
+        HBL_Cache::delete('leads_list_' . $business_id);
+    }
+    
+    // Log the enquiry
+    if (function_exists('hbl_log_security_event')) {
+        hbl_log_security_event(
+            sprintf('New enquiry submitted for business #%d', $business_id),
+            'info',
+            array(
+                'lead_id' => $lead_id,
+                'business_id' => $business_id,
+                'product_id' => $product_id,
+                'name' => $name,
+                'email' => $email
+            )
+        );
+    }
+    
+    // Return success
+    wp_send_json_success(array(
+        'message' => __('Your enquiry has been sent successfully. We will get back to you soon.', 'happy-business-listing'),
+        'lead_id' => $lead_id
+    ));
+}
+add_action('wp_ajax_hbl_submit_enquiry', 'hbl_submit_enquiry_ajax');
+add_action('wp_ajax_nopriv_hbl_submit_enquiry', 'hbl_submit_enquiry_ajax');
+
+/**
+ * Get client IP address
+ * 
+ * @return string Client IP address
+ */
+function hbl_get_client_ip() {
+    $ip_keys = array(
+        'HTTP_CLIENT_IP',
+        'HTTP_X_FORWARDED_FOR',
+        'HTTP_X_FORWARDED',
+        'HTTP_X_CLUSTER_CLIENT_IP',
+        'HTTP_FORWARDED_FOR',
+        'HTTP_FORWARDED',
+        'REMOTE_ADDR'
+    );
+    
+    foreach ($ip_keys as $key) {
+        if (isset($_SERVER[$key]) && filter_var($_SERVER[$key], FILTER_VALIDATE_IP)) {
+            return sanitize_text_field($_SERVER[$key]);
+        }
+    }
+    
+    return '127.0.0.1';
+}
+
+/**
+ * Check if a user is rate limited for a specific action
+ * 
+ * @param string $action Action name
+ * @param int $limit Maximum number of actions
+ * @param int $time_period Time period in seconds
+ * @return bool True if rate limited, false otherwise
+ */
+if (!function_exists('hbl_is_rate_limited')) {
+function hbl_is_rate_limited($action, $limit, $time_period) {
+    $ip = hbl_get_client_ip();
+    $transient_key = 'hbl_rate_limit_' . $action . '_' . md5($ip);
+    
+    $count = get_transient($transient_key);
+    
+    if ($count === false) {
+        set_transient($transient_key, 1, $time_period);
+        return false;
+    }
+    
+    if ($count >= $limit) {
+        return true;
+    }
+    
+    set_transient($transient_key, $count + 1, $time_period);
+    return false;
+}
+}

@@ -912,3 +912,33 @@ function hbl_display_whatsapp_tab() {
     <?php
 }
 add_action('hbl_settings_tab_whatsapp', 'hbl_display_whatsapp_tab');
+
+/**
+ * Enqueue the settings-page JavaScript that toggles Twilio / WA-Business fields.
+ * We guard by checking that we are on the Happy Business Listing settings page
+ * (the hook suffix always contains "hbl_settings") *and* on the WhatsApp tab.
+ * Using a contains() test is more reliable than comparing against a single
+ * hard-coded hook suffix because the exact value can differ across WP
+ * versions and when other plugins manipulate the menu structure.
+ */
+function hbl_enqueue_whatsapp_admin_js($hook){
+    // Load only on the Happy Business Listing settings screen.
+    if (strpos($hook, 'hbl_settings') === false) {
+        return;
+    }
+
+    // Only enqueue on the WhatsApp tab to avoid unnecessary asset loading.
+    $current_tab = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'general';
+    if ($current_tab !== 'whatsapp') {
+        return;
+    }
+
+    wp_enqueue_script(
+        'hbl-admin-whatsapp',
+        HBL_PLUGIN_URL . 'assets/js/hbl-admin-whatsapp.js',
+        array('jquery'),
+        filemtime(HBL_PLUGIN_DIR . 'assets/js/hbl-admin-whatsapp.js'), // cache-bust on file change
+        true
+    );
+}
+add_action('admin_enqueue_scripts','hbl_enqueue_whatsapp_admin_js');

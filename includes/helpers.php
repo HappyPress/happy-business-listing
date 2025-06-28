@@ -296,7 +296,7 @@ function hbl_get_business_services($business_id, $args = array()) {
  * @param int $limit Number of related businesses to return
  * @return array Array of related business posts
  */
-function hbl_get_related_businesses($business_id, $limit = 3) {
+function hbl_get_related_businesses_legacy($business_id, $limit = 3) {
     // Get business details
     $company_type = hbl_get_field('company_type', $business_id);
     $location = hbl_get_field('location', $business_id);
@@ -333,4 +333,194 @@ function hbl_get_related_businesses($business_id, $limit = 3) {
     $query = new WP_Query($args);
     
     return $query->posts;
+}
+
+/**
+ * Get related business listings
+ *
+ * @param int $post_id The business listing post ID
+ * @param array $args Optional arguments
+ * @return array Array of related business listings
+ */
+function hbl_get_related_businesses($post_id, $args = array()) {
+    // Default arguments
+    $defaults = array(
+        'posts_per_page' => 4,
+        'exclude' => array($post_id),
+        'orderby' => 'rand',
+        'order' => 'DESC',
+        'relationship' => 'category', // 'category', 'tag', 'location', 'company_type', or 'all'
+    );
+    
+    $args = wp_parse_args($args, $defaults);
+    
+    // Cache key
+    $cache_key = 'related_businesses_' . $post_id . '_' . md5(serialize($args));
+    
+    // Try to get from cache first
+    $cached_data = HBL_Cache::get($cache_key);
+    if ($cached_data !== false) {
+        return $cached_data;
+    }
+    
+    // Get the current business data
+    $business = get_post($post_id);
+    if (!$business || $business->post_type !== 'business_listing') {
+        return array();
+    }
+    
+    // Base query args
+    $query_args = array(
+        'post_type' => 'business_listing',
+        'post_status' => 'publish',
+        'posts_per_page' => $args['posts_per_page'],
+        'post__not_in' => $args['exclude'],
+        'orderby' => $args['orderby'],
+        'order' => $args['order'],
+    );
+    
+    // Different relationship types
+    if ($args['relationship'] === 'category' || $args['relationship'] === 'all') {
+        // Get categories of the current business
+        $categories = wp_get_post_terms($post_id, 'business_category', array('fields' => 'ids'));
+        
+        if (!empty($categories) && !is_wp_error($categories)) {
+            $query_args['tax_query'][] = array(
+                'taxonomy' => 'business_category',
+                'field' => 'id',
+                'terms' => $categories,
+            );
+        }
+    }
+    
+    if ($args['relationship'] === 'tag' || $args['relationship'] === 'all') {
+        // Get tags of the current business
+        $tags = wp_get_post_terms($post_id, 'business_tag', array('fields' => 'ids'));
+        
+        if (!empty($tags) && !is_wp_error($tags)) {
+            $query_args['tax_query'][] = array(
+                'taxonomy' => 'business_tag',
+                'field' => 'id',
+                'terms' => $tags,
+            );
+        }
+    }
+    
+    if ($args['relationship'] === 'location' || $args['relationship'] === 'all') {
+        // Get location of the current business
+        $location = get_post_meta($post_id, 'location', true);
+        
+        if (!empty($location)) {
+            $query_args['meta_query'][] = array(
+                'key' => 'location',
+                'value' => $location,
+                'compare' => 'LIKE',
+            );
+        }
+    }
+    
+    if ($args['relationship'] === 'company_type' || $args['relationship'] === 'all') {
+        // Get company type of the current business
+        $company_type = get_post_meta($post_id, 'company_type', true);
+        
+        if (!empty($company_type)) {
+            $query_args['meta_query'][] = array(
+                'key' => 'company_type',
+                'value' => $company_type,
+                'compare' => '=',
+            );
+        }
+    }
+    
+    // If we're using multiple relationship types, add the relation parameter
+    if ($args['relationship'] === 'all' && isset($query_args['tax_query']) && isset($query_args['meta_query'])) {
+        $query_args['relation'] = 'OR';
+    }
+    
+    // Run the query
+    $query = new WP_Query($query_args);
+    
+    // Format the results
+    $related_businesses = array();
+    foreach ($query->posts as $related_post) {
+        $related_businesses[] = array(
+            'id' => $related_post->ID,
+            'title' => $related_post->post_title,
+            'permalink' => get_permalink($related_post->ID),
+            'thumbnail' => get_the_post_thumbnail_url($related_post->ID, 'thumbnail'),
+            'company_type' => get_post_meta($related_post->ID, 'company_type', true),
+            'location' => get_post_meta($related_post->ID, 'location', true),
+            'rating' => get_post_meta($related_post->ID, 'rating', true),
+        );
+    }
+    
+    // Cache the results
+    HBL_Cache::set($cache_key, $related_businesses, 3600); // Cache for 1 hour
+    
+    return $related_businesses;
+}
+
+/**
+ * Get businesses by city
+ *
+ * @param string $city The city name
+ * @param array $args Optional arguments
+ * @return array Array of businesses in the specified city
+ */
+function hbl_get_businesses_by_city($city, $args = array()) {
+    // Default arguments
+    $defaults = array(
+        'posts_per_page' => 10,
+        'orderby' => 'date',
+        'order' => 'DESC',
+    );
+    
+    $args = wp_parse_args($args, $defaults);
+    
+    // Cache key
+    $cache_key = 'businesses_city_' . sanitize_title($city) . '_' . md5(serialize($args));
+    
+    // Try to get from cache first
+    $cached_data = HBL_Cache::get($cache_key);
+    if ($cached_data !== false) {
+        return $cached_data;
+    }
+    
+    // Query args
+    $query_args = array(
+        'post_type' => 'business_listing',
+        'post_status' => 'publish',
+        'posts_per_page' => $args['posts_per_page'],
+        'orderby' => $args['orderby'],
+        'order' => $args['order'],
+        'meta_query' => array(
+            array(
+                'key' => 'city',
+                'value' => $city,
+                'compare' => '=',
+            ),
+        ),
+    );
+    
+    // Run the query
+    $query = new WP_Query($query_args);
+    
+    // Format the results
+    $businesses = array();
+    foreach ($query->posts as $post) {
+        $businesses[] = array(
+            'id' => $post->ID,
+            'title' => $post->post_title,
+            'permalink' => get_permalink($post->ID),
+            'thumbnail' => get_the_post_thumbnail_url($post->ID, 'thumbnail'),
+            'company_type' => get_post_meta($post->ID, 'company_type', true),
+            'location' => get_post_meta($post->ID, 'location', true),
+            'rating' => get_post_meta($post->ID, 'rating', true),
+        );
+    }
+    
+    // Cache the results
+    HBL_Cache::set($cache_key, $businesses, 3600); // Cache for 1 hour
+    
+    return $businesses;
 }

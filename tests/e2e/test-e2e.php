@@ -561,8 +561,8 @@ class E2ETest extends WP_UnitTestCase {
         update_post_meta($lead_id, 'status', 'contacted');
         
         $this->assertEquals('contacted', get_post_meta($lead_id, 'status', true));
-    }
-    
+            }
+            
     /**
      * Configure WhatsApp settings
      */

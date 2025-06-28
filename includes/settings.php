@@ -85,8 +85,9 @@ function hbl_options_page() {
     
     // Get available tabs
     $tabs = apply_filters('hbl_settings_tabs', array(
-        'general' => __('General', 'happy-business-listing'),
-        'logs' => __('Logs', 'happy-business-listing')
+        'general'  => __('General', 'happy-business-listing'),
+        'whatsapp' => __('WhatsApp', 'happy-business-listing'),
+        'logs'     => __('Logs', 'happy-business-listing')
     ));
     ?>
     <div class="wrap hbl-settings-page">
@@ -103,6 +104,8 @@ function hbl_options_page() {
             // Display tab content
             if ($active_tab == 'general') {
                 hbl_display_general_tab();
+            } elseif ($active_tab == 'whatsapp') {
+                hbl_display_whatsapp_tab();
             } elseif ($active_tab == 'logs') {
                 hbl_display_logs_tab();
             } else {
@@ -154,33 +157,71 @@ function hbl_display_general_tab() {
                 </div>
             </div>
             <div class="hbl-settings-section">
-                <h2><?php _e('WhatsApp Integration', 'happy-business-listing'); ?></h2>
-                <div class="hbl-setting-item">
-                    <label><?php _e('Integration Type', 'happy-business-listing'); ?></label>
-                    <div class="hbl-radio-group">
-                        <label>
-                            <input type="radio" name="hbl_whatsapp_integration" value="twilio" <?php checked('twilio', get_option('hbl_whatsapp_integration')); ?>>
-                            <?php _e('Twilio API', 'happy-business-listing'); ?>
-                        </label>
-                        <label>
-                            <input type="radio" name="hbl_whatsapp_integration" value="whatsapp_business" <?php checked('whatsapp_business', get_option('hbl_whatsapp_integration')); ?>>
-                            <?php _e('WhatsApp Business API', 'happy-business-listing'); ?>
-                        </label>
-                    </div>
-                </div>
-                <div class="hbl-setting-item">
-                    <label for="hbl_twilio_api"><?php _e('Twilio API Key', 'happy-business-listing'); ?></label>
-                    <input type="text" id="hbl_twilio_api" name="hbl_twilio_api" value="<?php echo esc_attr(get_option('hbl_twilio_api')); ?>" class="regular-text">
-                </div>
-                <div class="hbl-setting-item">
-                    <label for="hbl_whatsapp_business_api"><?php _e('WhatsApp Business API Key', 'happy-business-listing'); ?></label>
-                    <input type="text" id="hbl_whatsapp_business_api" name="hbl_whatsapp_business_api" value="<?php echo esc_attr(get_option('hbl_whatsapp_business_api')); ?>" class="regular-text">
-                </div>
             </div>
         </div>
         <?php submit_button(__('Save Settings', 'happy-business-listing'), 'primary', 'submit', false, ['class' => 'hbl-submit-button']); ?>
     </form>
     <?php
+}
+
+if (!function_exists('hbl_display_whatsapp_tab')) {
+function hbl_display_whatsapp_tab() {
+    ?>
+    <form method="post" action="options.php">
+        <?php settings_fields('hbl_options_group'); ?>
+        <div class="hbl-settings-section">
+            <h2><?php _e('WhatsApp Integration', 'happy-business-listing'); ?></h2>
+            <div class="hbl-setting-item">
+                <label><?php _e('Integration Type', 'happy-business-listing'); ?></label>
+                <div class="hbl-radio-group">
+                    <label>
+                        <input type="radio" name="hbl_whatsapp_integration" value="twilio" <?php checked('twilio', get_option('hbl_whatsapp_integration')); ?>>
+                        <?php _e('Twilio API', 'happy-business-listing'); ?>
+                    </label>
+                    <label>
+                        <input type="radio" name="hbl_whatsapp_integration" value="whatsapp_business" <?php checked('whatsapp_business', get_option('hbl_whatsapp_integration')); ?>>
+                        <?php _e('WhatsApp Business API', 'happy-business-listing'); ?>
+                    </label>
+                </div>
+            </div>
+            <div class="hbl-setting-item twilio-option">
+                <label for="hbl_twilio_api"><?php _e('Twilio API Key', 'happy-business-listing'); ?></label>
+                <input type="text" id="hbl_twilio_api" name="hbl_twilio_api" value="<?php echo esc_attr(get_option('hbl_twilio_api')); ?>" class="regular-text">
+            </div>
+            <div class="hbl-setting-item wa-business-option">
+                <label for="hbl_whatsapp_business_api"><?php _e('WhatsApp Business API Key', 'happy-business-listing'); ?></label>
+                <input type="text" id="hbl_whatsapp_business_api" name="hbl_whatsapp_business_api" value="<?php echo esc_attr(get_option('hbl_whatsapp_business_api')); ?>" class="regular-text">
+            </div>
+            <div class="hbl-setting-item twilio-option">
+                <label for="hbl_twilio_auth"><?php _e('Twilio Auth Token', 'happy-business-listing'); ?></label>
+                <input type="text" id="hbl_twilio_auth" name="hbl_twilio_auth" value="<?php echo esc_attr(get_option('hbl_twilio_auth')); ?>" class="regular-text">
+            </div>
+            <div class="hbl-setting-item twilio-option">
+                <label for="hbl_twilio_from">
+                    <?php _e('Twilio WhatsApp From Number', 'happy-business-listing'); ?>
+                </label>
+                <input type="text" id="hbl_twilio_from" name="hbl_twilio_from" value="<?php echo esc_attr(get_option('hbl_twilio_from')); ?>" class="regular-text">
+            </div>
+            <div class="hbl-setting-item wa-business-option">
+                <label for="hbl_whatsapp_phone_id"><?php _e('WhatsApp Business Phone ID', 'happy-business-listing'); ?></label>
+                <input type="text" id="hbl_whatsapp_phone_id" name="hbl_whatsapp_phone_id" value="<?php echo esc_attr(get_option('hbl_whatsapp_phone_id')); ?>" class="regular-text">
+            </div>
+        </div>
+        <script>
+        jQuery(function($){
+            function toggleWaFields(){
+                var type = $('input[name="hbl_whatsapp_integration"]:checked').val();
+                $('.twilio-option').toggle(type === 'twilio');
+                $('.wa-business-option').toggle(type === 'whatsapp_business');
+            }
+            toggleWaFields();
+            $('input[name="hbl_whatsapp_integration"]').on('change', toggleWaFields);
+        });
+        </script>
+        <?php submit_button(__('Save Settings', 'happy-business-listing'), 'primary', 'submit', false, ['class' => 'hbl-submit-button']); ?>
+    </form>
+    <?php
+}
 }
 
 /**

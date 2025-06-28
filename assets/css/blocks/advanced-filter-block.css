@@ -1,0 +1,787 @@
+/**
+ * Advanced Filter Block CSS (Editor)
+ */
+
+.wp-block-happy-business-listing-advanced-filter {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.editor-styles-wrapper .wp-block-happy-business-listing-advanced-filter h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    color: #333;
+}
+
+/* Customize the block appearance in the editor */
+.block-editor-block-list__block[data-type="happy-business-listing/advanced-filter"] {
+    border: 1px dashed #ccc;
+    padding: 10px;
+}
+
+/* Make the block stand out when selected */
+.block-editor-block-list__block.is-selected[data-type="happy-business-listing/advanced-filter"] {
+    border-color: #0066cc;
+}
+
+/* Style the ServerSideRender loading state */
+.wp-block-happy-business-listing-advanced-filter .components-placeholder {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f9f9f9;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+}
+
+.wp-block-happy-business-listing-advanced-filter .components-placeholder__label {
+    display: flex;
+    align-items: center;
+}
+
+.wp-block-happy-business-listing-advanced-filter .components-placeholder__label svg {
+    margin-right: 10px;
+}
+
+.wp-block-happy-business-listing-advanced-filter .components-placeholder__fieldset {
+    text-align: center;
+}
+
+/* Inspector controls styling */
+.components-panel__body .components-base-control {
+    margin-bottom: 16px;
+}
+
+.components-panel__body .components-toggle-control .components-base-control__field {
+    margin-bottom: 0;
+}
+
+.components-panel__body .components-toggle-control {
+    margin-bottom: 16px;
+}
+
+.components-panel__body .components-range-control {
+    margin-bottom: 24px;
+}
+
+/* Style the editor preview */
+.wp-block-happy-business-listing-advanced-filter .hbl-filter-fields {
+    display: grid;
+    gap: 15px;
+}
+
+.wp-block-happy-business-listing-advanced-filter .hbl-filter-layout-horizontal .hbl-filter-fields {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.wp-block-happy-business-listing-advanced-filter .hbl-filter-layout-vertical .hbl-filter-fields {
+    grid-template-columns: 1fr;
+}
+
+.wp-block-happy-business-listing-advanced-filter .hbl-filter-field {
+    margin-bottom: 10px;
+}
+
+.wp-block-happy-business-listing-advanced-filter .hbl-filter-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+    font-size: 0.9em;
+}
+
+.wp-block-happy-business-listing-advanced-filter .hbl-filter-field input[type="text"],
+.wp-block-happy-business-listing-advanced-filter .hbl-filter-field select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.wp-block-happy-business-listing-advanced-filter .hbl-filter-actions {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 20px;
+    gap: 15px;
+}
+
+.wp-block-happy-business-listing-advanced-filter .hbl-filter-button,
+.wp-block-happy-business-listing-advanced-filter .hbl-reset-button {
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.wp-block-happy-business-listing-advanced-filter .hbl-filter-button {
+    background-color: #0066cc;
+    color: #fff;
+    border: none;
+}
+
+.wp-block-happy-business-listing-advanced-filter .hbl-reset-button {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+    text-decoration: none;
+}
+
+/**
+ * Advanced Filter Block CSS
+ */
+
+/* Base styles */
+.hbl-advanced-filter {
+    margin: 0 0 30px;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+.hbl-advanced-filter * {
+    box-sizing: border-box;
+}
+
+.hbl-filter-title {
+    margin: 0 0 20px;
+    padding: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Filter toggle button (mobile) */
+.hbl-filter-toggle {
+    display: none;
+    width: 100%;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: left;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.hbl-filter-toggle:hover {
+    background-color: #e9e9e9;
+}
+
+.hbl-filter-toggle-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    position: relative;
+    vertical-align: middle;
+}
+
+.hbl-filter-toggle-icon:before,
+.hbl-filter-toggle-icon:after {
+    content: '';
+    position: absolute;
+    background-color: #333;
+    transition: transform 0.3s;
+}
+
+.hbl-filter-toggle-icon:before {
+    width: 100%;
+    height: 2px;
+    top: 7px;
+    left: 0;
+}
+
+.hbl-filter-toggle-icon:after {
+    width: 2px;
+    height: 100%;
+    top: 0;
+    left: 7px;
+}
+
+.hbl-show-filters .hbl-filter-toggle-icon:after {
+    transform: rotate(90deg);
+    opacity: 0;
+}
+
+/* Filter form */
+.hbl-advanced-filter-form {
+    margin: 0;
+    padding: 0;
+}
+
+/* Filter fields container */
+.hbl-filter-fields {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -10px 20px;
+}
+
+/* Individual filter field */
+.hbl-filter-field {
+    padding: 0 10px 15px;
+    margin-bottom: 5px;
+}
+
+/* Filter field labels */
+.hbl-filter-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Filter inputs */
+.hbl-filter-field input[type="text"],
+.hbl-filter-field select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #333;
+}
+
+.hbl-filter-field input[type="text"]:focus,
+.hbl-filter-field select:focus {
+    border-color: #007cba;
+    outline: none;
+    box-shadow: 0 0 0 1px #007cba;
+}
+
+/* Checkbox styles */
+.hbl-checkbox-label {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+.hbl-checkbox-label input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.hbl-checkbox-group {
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    background-color: #fff;
+}
+
+/* Date range inputs */
+.hbl-date-range-inputs {
+    display: flex;
+    align-items: center;
+}
+
+.hbl-date-range-inputs input {
+    width: calc(50% - 10px);
+}
+
+.hbl-date-separator {
+    width: 20px;
+    text-align: center;
+    display: inline-block;
+}
+
+/* Distance inputs */
+.hbl-distance-inputs {
+    display: flex;
+    flex-direction: column;
+}
+
+.hbl-location-search {
+    margin-bottom: 10px;
+}
+
+.hbl-distance-selects {
+    display: flex;
+}
+
+.hbl-distance-selects select:first-child {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.hbl-distance-selects select:last-child {
+    width: 80px;
+}
+
+.hbl-use-my-location {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background-color 0.2s;
+}
+
+.hbl-use-my-location:hover {
+    background-color: #e9e9e9;
+}
+
+.hbl-use-my-location.hbl-loading {
+    position: relative;
+    color: transparent;
+}
+
+.hbl-use-my-location.hbl-loading:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-top-color: #007cba;
+    border-radius: 50%;
+    animation: hbl-spin 1s infinite linear;
+}
+
+/* Sorting selects */
+.hbl-sorting-selects {
+    display: flex;
+}
+
+.hbl-sorting-selects select:first-child {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.hbl-sorting-selects select:last-child {
+    width: 120px;
+}
+
+/* Filter actions */
+.hbl-filter-actions {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.hbl-submit-button,
+.hbl-reset-button,
+.hbl-save-filter-button {
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-right: 10px;
+}
+
+.hbl-submit-button {
+    background-color: #007cba;
+    color: #fff;
+    border: none;
+}
+
+.hbl-submit-button:hover {
+    background-color: #006ba1;
+}
+
+.hbl-reset-button {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.hbl-reset-button:hover {
+    background-color: #e9e9e9;
+}
+
+.hbl-save-filter-button {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.hbl-save-filter-button:hover {
+    background-color: #e9e9e9;
+}
+
+/* Saved filters */
+.hbl-saved-filters {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.hbl-saved-filters h4 {
+    margin: 0 0 10px;
+    padding: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.hbl-saved-filter-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.hbl-saved-filter-item:hover {
+    background-color: #f5f5f5;
+}
+
+.hbl-delete-saved-filter {
+    background: none;
+    border: none;
+    color: #cc0000;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    line-height: 1;
+}
+
+.hbl-no-saved-filters {
+    font-style: italic;
+    color: #666;
+}
+
+/* Filter results */
+.hbl-filter-results {
+    margin-top: 30px;
+}
+
+.hbl-filter-results-count {
+    margin-bottom: 20px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.hbl-filter-results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+/* Business card */
+.hbl-business-card {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.hbl-business-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.hbl-business-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.hbl-business-image {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+}
+
+.hbl-business-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hbl-featured-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ffc107;
+    color: #333;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.hbl-business-title {
+    padding: 15px 15px 10px;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.hbl-business-rating {
+    padding: 0 15px 10px;
+    display: flex;
+    align-items: center;
+}
+
+.hbl-rating-stars {
+    position: relative;
+    width: 80px;
+    height: 16px;
+    margin-right: 5px;
+}
+
+.hbl-rating-stars-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23ddd" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>') repeat-x;
+    background-size: 16px 16px;
+}
+
+.hbl-rating-stars-value {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="%23ffc107" stroke="%23ffc107" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>') repeat-x;
+    background-size: 16px 16px;
+}
+
+.hbl-rating-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+}
+
+.hbl-business-meta {
+    padding: 0 15px 10px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.hbl-business-meta-item {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 15px;
+    margin-bottom: 5px;
+    font-size: 13px;
+    color: #666;
+}
+
+.hbl-business-meta-item i {
+    margin-right: 5px;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.hbl-business-excerpt {
+    padding: 0 15px 15px;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+}
+
+/* Pagination */
+.hbl-pagination {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.hbl-pagination .page-numbers {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 0 3px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.2s;
+}
+
+.hbl-pagination .page-numbers.current {
+    background-color: #007cba;
+    color: #fff;
+    border-color: #007cba;
+}
+
+.hbl-pagination .page-numbers:hover:not(.current) {
+    background-color: #f5f5f5;
+}
+
+/* No results */
+.hbl-no-results {
+    padding: 30px;
+    text-align: center;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.hbl-no-results p:first-child {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+/* Loading state */
+.hbl-loading {
+    padding: 30px;
+    text-align: center;
+}
+
+.hbl-loading-spinner {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-top-color: #007cba;
+    border-radius: 50%;
+    animation: hbl-spin 1s infinite linear;
+    margin-bottom: 10px;
+}
+
+.hbl-loading-text {
+    display: block;
+    font-size: 16px;
+    color: #666;
+}
+
+@keyframes hbl-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error message */
+.hbl-error {
+    padding: 15px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+/* Layout variations */
+.hbl-filter-layout-horizontal .hbl-filter-field {
+    width: 25%;
+}
+
+.hbl-filter-layout-vertical .hbl-filter-field {
+    width: 100%;
+}
+
+.hbl-filter-layout-grid .hbl-filter-field {
+    width: 33.333%;
+}
+
+.hbl-filter-layout-compact .hbl-filter-field {
+    width: 50%;
+}
+
+/* Style variations */
+.hbl-filter-style-minimal {
+    padding: 0;
+    border: none;
+}
+
+.hbl-filter-style-minimal .hbl-filter-field input[type="text"],
+.hbl-filter-style-minimal .hbl-filter-field select {
+    border: none;
+    border-bottom: 1px solid #ddd;
+    border-radius: 0;
+    padding: 8px 0;
+    background-color: transparent;
+}
+
+.hbl-filter-style-boxed {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.hbl-filter-style-modern {
+    padding: 0;
+}
+
+.hbl-filter-style-modern .hbl-filter-field input[type="text"],
+.hbl-filter-style-modern .hbl-filter-field select {
+    border: none;
+    border-radius: 20px;
+    padding: 10px 15px;
+    background-color: #f5f5f5;
+}
+
+.hbl-filter-style-modern .hbl-submit-button,
+.hbl-filter-style-modern .hbl-reset-button,
+.hbl-filter-style-modern .hbl-save-filter-button {
+    border-radius: 20px;
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+    .hbl-filter-layout-horizontal .hbl-filter-field,
+    .hbl-filter-layout-grid .hbl-filter-field {
+        width: 50%;
+    }
+}
+
+@media (max-width: 768px) {
+    .hbl-filter-toggle {
+        display: block;
+    }
+    
+    .hbl-advanced-filter-form {
+        display: none;
+    }
+    
+    .hbl-advanced-filter-form.hbl-show-filters {
+        display: block;
+    }
+    
+    .hbl-filter-layout-horizontal .hbl-filter-field,
+    .hbl-filter-layout-grid .hbl-filter-field,
+    .hbl-filter-layout-compact .hbl-filter-field {
+        width: 100%;
+    }
+    
+    .hbl-filter-actions {
+        flex-direction: column;
+    }
+    
+    .hbl-submit-button,
+    .hbl-reset-button,
+    .hbl-save-filter-button {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+    
+    .hbl-filter-results-grid {
+        grid-template-columns: 1fr;
+    }
+} 
