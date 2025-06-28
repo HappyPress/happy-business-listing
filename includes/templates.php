@@ -87,45 +87,46 @@ function hbl_load_plugin_templates($template) {
 add_filter('template_include', 'hbl_load_plugin_templates');
 
 /**
- * Get template part with fallback to plugin templates
+ * Get a template part with arguments
  *
- * @param string $slug The slug name for the generic template
- * @param string $name The name of the specialized template
- * @param array $args Additional arguments passed to the template
+ * @param string $slug Template slug
+ * @param string|null $name Template name
+ * @param array $args Template arguments
+ * @return void
  */
 function hbl_get_template_part($slug, $name = null, $args = array()) {
-    // Extract args to make them available in the template
-    if (!empty($args) && is_array($args)) {
-        extract($args);
+    // Ensure args is an array
+    if (!is_array($args)) {
+        $args = array();
     }
     
-    // Look for template in theme
+    // Look for template in theme first
     $template = '';
-    
-    // Format template name
     $template_name = $name ? "{$slug}-{$name}.php" : "{$slug}.php";
     
-    // Check theme directory
-    $template = locate_template(array(
-        "hbl/{$template_name}",
-        $template_name
+    // Check theme directory first
+    $theme_template = locate_template(array(
+        "happy-business-listing/{$template_name}",
+        "happy-business-listing/parts/{$template_name}"
     ));
     
-    // Fallback to plugin templates
-    if (!$template) {
-        $template = HBL_PLUGIN_DIR . "templates/parts/{$template_name}";
-        
-        if (!file_exists($template)) {
-            // Final fallback to default template
-            $template = HBL_PLUGIN_DIR . "templates/parts/{$slug}.php";
+    if ($theme_template) {
+        $template = $theme_template;
+    } else {
+        // Check plugin directory
+        $plugin_template = HBL_PLUGIN_DIR . "templates/parts/{$template_name}";
+        if (file_exists($plugin_template)) {
+            $template = $plugin_template;
         }
     }
     
-    // Allow filtering of the template path
-    $template = apply_filters('hbl_get_template_part', $template, $slug, $name, $args);
-    
-    // Include the template if it exists
-    if (file_exists($template)) {
+    // If template found, include it with args
+    if ($template) {
+        // Extract args to variables if needed
+        if (!empty($args) && is_array($args)) {
+            extract($args);
+        }
+        
         include $template;
     }
 }

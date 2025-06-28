@@ -46,13 +46,57 @@ function hbl_register_rest_routes() {
                 'company_type' => array(
                     'sanitize_callback' => 'sanitize_text_field'
                 ),
+                'category' => array(
+                    'sanitize_callback' => 'sanitize_text_field',
+                    'description' => 'Filter by business category'
+                ),
+                'rating_min' => array(
+                    'sanitize_callback' => 'floatval',
+                    'description' => 'Minimum rating (1-5)'
+                ),
+                'price_range' => array(
+                    'sanitize_callback' => 'sanitize_text_field',
+                    'description' => 'Price range (low, medium, high, premium)'
+                ),
+                'established_year_min' => array(
+                    'sanitize_callback' => 'absint',
+                    'description' => 'Minimum year established'
+                ),
+                'established_year_max' => array(
+                    'sanitize_callback' => 'absint',
+                    'description' => 'Maximum year established'
+                ),
+                'city' => array(
+                    'sanitize_callback' => 'sanitize_text_field',
+                    'description' => 'Filter by city'
+                ),
+                'state' => array(
+                    'sanitize_callback' => 'sanitize_text_field',
+                    'description' => 'Filter by state'
+                ),
+                'country' => array(
+                    'sanitize_callback' => 'sanitize_text_field',
+                    'description' => 'Filter by country'
+                ),
+                'featured' => array(
+                    'sanitize_callback' => 'rest_sanitize_boolean',
+                    'description' => 'Show only featured businesses'
+                ),
+                'verified' => array(
+                    'sanitize_callback' => 'rest_sanitize_boolean',
+                    'description' => 'Show only verified businesses'
+                ),
                 'orderby' => array(
                     'default' => 'date',
-                    'sanitize_callback' => 'sanitize_text_field'
+                    'sanitize_callback' => 'sanitize_text_field',
+                    'enum' => array('date', 'title', 'rating', 'popularity', 'price', 'established_year', 'random'),
+                    'description' => 'Sort businesses by field'
                 ),
                 'order' => array(
                     'default' => 'DESC',
-                    'sanitize_callback' => 'sanitize_text_field'
+                    'sanitize_callback' => 'sanitize_text_field',
+                    'enum' => array('ASC', 'DESC'),
+                    'description' => 'Sort order'
                 )
             )
         ),
@@ -352,22 +396,52 @@ function hbl_get_businesses_rest($request) {
     $orderby = $request->get_param('orderby');
     $order = $request->get_param('order');
     
+    // Get new advanced filter parameters
+    $category = $request->get_param('category');
+    $rating_min = $request->get_param('rating_min');
+    $price_range = $request->get_param('price_range');
+    $established_year_min = $request->get_param('established_year_min');
+    $established_year_max = $request->get_param('established_year_max');
+    $city = $request->get_param('city');
+    $state = $request->get_param('state');
+    $country = $request->get_param('country');
+    $featured = $request->get_param('featured');
+    $verified = $request->get_param('verified');
+    
+    // Cache key based on request parameters
+    $cache_key = 'businesses_' . md5(serialize($request->get_params()));
+    
+    // Try to get from cache first
+    $cached_data = HBL_Cache::get($cache_key);
+    if ($cached_data !== false) {
+        return rest_ensure_response($cached_data);
+    }
+    
+    // Build query args
     $args = array(
         'post_type' => 'business_listing',
-        'post_status' => 'publish',
         'posts_per_page' => $per_page,
         'paged' => $page,
-        'orderby' => $orderby,
+        'orderby' => $orderby === 'random' ? 'rand' : $orderby,
         'order' => $order
     );
     
-    // Add search parameter
+    // Add search if provided
     if (!empty($search)) {
         $args['s'] = $search;
     }
     
-    // Add meta query for filters
+    // Build meta query for filters
     $meta_query = array();
+    
+    // Basic filters
+    if (!empty($company_type)) {
+        $meta_query[] = array(
+            'key' => 'company_type',
+            'value' => $company_type,
+            'compare' => '='
+        );
+    }
     
     if (!empty($location)) {
         $meta_query[] = array(
@@ -377,36 +451,132 @@ function hbl_get_businesses_rest($request) {
         );
     }
     
-    if (!empty($company_type)) {
+    // Advanced filters
+    if (!empty($rating_min)) {
         $meta_query[] = array(
-            'key' => 'company_type',
-            'value' => $company_type,
+            'key' => 'rating',
+            'value' => floatval($rating_min),
+            'compare' => '>=',
+            'type' => 'NUMERIC'
+        );
+    }
+    
+    if (!empty($price_range)) {
+        $meta_query[] = array(
+            'key' => 'price_range',
+            'value' => $price_range,
             'compare' => '='
         );
     }
     
+    if (!empty($established_year_min)) {
+        $meta_query[] = array(
+            'key' => 'established_year',
+            'value' => intval($established_year_min),
+            'compare' => '>=',
+            'type' => 'NUMERIC'
+        );
+    }
+    
+    if (!empty($established_year_max)) {
+        $meta_query[] = array(
+            'key' => 'established_year',
+            'value' => intval($established_year_max),
+            'compare' => '<=',
+            'type' => 'NUMERIC'
+        );
+    }
+    
+    if (!empty($city)) {
+        $meta_query[] = array(
+            'key' => 'city',
+            'value' => $city,
+            'compare' => '='
+        );
+    }
+    
+    if (!empty($state)) {
+        $meta_query[] = array(
+            'key' => 'state',
+            'value' => $state,
+            'compare' => '='
+        );
+    }
+    
+    if (!empty($country)) {
+        $meta_query[] = array(
+            'key' => 'country',
+            'value' => $country,
+            'compare' => '='
+        );
+    }
+    
+    if ($featured !== null) {
+        $meta_query[] = array(
+            'key' => 'featured',
+            'value' => $featured ? '1' : '0',
+            'compare' => '='
+        );
+    }
+    
+    if ($verified !== null) {
+        $meta_query[] = array(
+            'key' => 'verified',
+            'value' => $verified ? '1' : '0',
+            'compare' => '='
+        );
+    }
+    
+    // Add meta query to args if we have filters
     if (!empty($meta_query)) {
         $args['meta_query'] = $meta_query;
     }
     
-    $query = new WP_Query($args);
-    $businesses = array();
-    
-    if ($query->have_posts()) {
-        while ($query->have_posts()) {
-            $query->the_post();
-            $businesses[] = hbl_format_business_for_api(get_post());
-        }
+    // Add taxonomy query for category
+    if (!empty($category)) {
+        $args['tax_query'] = array(
+            array(
+                'taxonomy' => 'business_category',
+                'field' => 'slug',
+                'terms' => $category
+            )
+        );
     }
     
-    wp_reset_postdata();
+    // Custom ordering
+    if ($orderby === 'rating') {
+        $args['meta_key'] = 'rating';
+        $args['orderby'] = 'meta_value_num';
+    } elseif ($orderby === 'popularity') {
+        $args['meta_key'] = 'view_count';
+        $args['orderby'] = 'meta_value_num';
+    } elseif ($orderby === 'price') {
+        $args['meta_key'] = 'price_range';
+        $args['orderby'] = 'meta_value';
+    } elseif ($orderby === 'established_year') {
+        $args['meta_key'] = 'established_year';
+        $args['orderby'] = 'meta_value_num';
+    }
     
-    return new WP_REST_Response(array(
+    // Run the query
+    $query = new WP_Query($args);
+    
+    $businesses = array();
+    foreach ($query->posts as $post) {
+        $businesses[] = hbl_format_business_for_api($post);
+    }
+    
+    $data = array(
         'businesses' => $businesses,
         'total' => $query->found_posts,
         'total_pages' => $query->max_num_pages,
         'current_page' => $page
-    ), 200);
+    );
+    
+    // Cache the results
+    HBL_Cache::set($cache_key, $data, 3600); // Cache for 1 hour
+    
+    return rest_ensure_response($data);
 }
 
 /**

@@ -5,8 +5,11 @@ function hbl_register_post_types() {
         'label' => 'Business Listings',
         'public' => true,
         'supports' => array('title', 'editor', 'thumbnail', 'custom-fields'),
-        'rewrite' => array('slug' => 'business-listing'),
-        'has_archive' => true,
+        'rewrite' => array(
+            'slug'       => 'business',
+            'with_front' => false,
+        ),
+        'has_archive' => 'businesses',
     );
     register_post_type('business_listing', $business_listing_args);
 

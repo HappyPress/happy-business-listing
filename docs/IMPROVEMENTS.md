@@ -11,6 +11,7 @@ This document provides detailed information about the five major improvements im
 5. [Accessibility Features](#accessibility-features)
 6. [Testing and Validation](#testing-and-validation)
 7. [Performance Metrics](#performance-metrics)
+8. [Implementation Plan & Next Steps](#implementation-plan-next-steps)
 
 ---
 
@@ -26,12 +27,12 @@ Comprehensive end-to-end testing framework covering all major plugin functionali
 
 ### Test Coverage
 
-#### Business Registration Journey
+#### Seller Registration Journey
 ```php
-test_complete_business_registration_journey()
+test_complete_seller_registration_journey()
 ```
 - Form submission validation
-- Business listing creation
+- Seller listing creation
 - User association verification
 - Display functionality testing
 - Search integration testing
@@ -41,7 +42,7 @@ test_complete_business_registration_journey()
 ```php
 test_complete_lead_management_journey()
 ```
-- Business creation with services
+- Seller creation with products
 - Contact form submission
 - Lead creation and association
 - Admin interface testing
@@ -68,7 +69,7 @@ test_multisite_functionality()
 test_admin_interface_functionality()
 ```
 - Settings page validation
-- Business listing management
+- Seller listing management
 - User management testing
 - Analytics and reporting
 
@@ -76,7 +77,7 @@ test_admin_interface_functionality()
 ```php
 test_frontend_functionality()
 ```
-- Business listing pages
+- Seller listing pages
 - Detail page functionality
 - Search and filters
 - Responsive design testing
@@ -122,19 +123,19 @@ Complete REST API implementation providing external access to all plugin functio
 
 ### API Endpoints
 
-#### Business Management
+#### Seller Management
 ```
-GET    /wp-json/hbl/v1/businesses
-POST   /wp-json/hbl/v1/businesses
-GET    /wp-json/hbl/v1/businesses/{id}
-PUT    /wp-json/hbl/v1/businesses/{id}
-DELETE /wp-json/hbl/v1/businesses/{id}
+GET    /wp-json/hbl/v1/sellers
+POST   /wp-json/hbl/v1/sellers
+GET    /wp-json/hbl/v1/sellers/{id}
+PUT    /wp-json/hbl/v1/sellers/{id}
+DELETE /wp-json/hbl/v1/sellers/{id}
 ```
 
-#### Service Management
+#### Product Management
 ```
-GET    /wp-json/hbl/v1/services
-POST   /wp-json/hbl/v1/services
+GET    /wp-json/hbl/v1/products
+POST   /wp-json/hbl/v1/products
 ```
 
 #### Lead Management
@@ -160,7 +161,7 @@ GET    /wp-json/hbl/v1/stats
 
 #### User Management
 ```
-POST   /wp-json/hbl/v1/users/business
+POST   /wp-json/hbl/v1/users/seller
 ```
 
 ### Authentication & Security
@@ -188,7 +189,7 @@ POST   /wp-json/hbl/v1/users/business
 #### Success Response
 ```json
 {
-  "businesses": [...],
+  "sellers": [...],
   "total": 25,
   "total_pages": 3,
   "current_page": 1
@@ -208,25 +209,25 @@ POST   /wp-json/hbl/v1/users/business
 
 ### Usage Examples
 
-#### Get All Businesses
+#### Get All Sellers
 ```bash
-curl -X GET "https://yoursite.com/wp-json/hbl/v1/businesses?per_page=10&page=1"
+curl -X GET "https://yoursite.com/wp-json/hbl/v1/sellers?per_page=10&page=1"
 ```
 
-#### Create Business
+#### Create Seller
 ```bash
-curl -X POST "https://yoursite.com/wp-json/hbl/v1/businesses" \
+curl -X POST "https://yoursite.com/wp-json/hbl/v1/sellers" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -d '{
-    "business_name": "Test Business",
+    "seller_name": "Test Seller",
     "company_type": "Pvt Ltd",
     "location": "Test Location",
     "email": "test@example.com"
   }'
 ```
 
-#### Search Businesses
+#### Search Sellers
 ```bash
 curl -X GET "https://yoursite.com/wp-json/hbl/v1/search?q=web+development&location=Mumbai"
 ```
@@ -252,9 +253,9 @@ class HBL_Cache {
 ```
 
 #### Cache Keys
-- `hbl_business_list_*` - Business listing queries
-- `hbl_business_single_*` - Single business data
-- `hbl_services_list_*` - Services listing
+- `hbl_seller_list_*` - Seller listing queries
+- `hbl_seller_single_*` - Single seller data
+- `hbl_products_list_*` - Product listing
 - `hbl_leads_list_*` - Leads listing
 - `hbl_search_results_*` - Search results
 - `hbl_stats` - Plugin statistics
@@ -284,14 +285,14 @@ HBL_Cache::clear_all();
 
 ### Cache Functions
 
-#### Business Listings Cache
+#### Seller Listings Cache
 ```php
-hbl_cache_business_listings($args, $expiration)
+hbl_cache_seller_listings($args, $expiration)
 ```
 
-#### Single Business Cache
+#### Single Seller Cache
 ```php
-hbl_cache_business_single($business_id, $expiration)
+hbl_cache_seller_single($seller_id, $expiration)
 ```
 
 #### Search Results Cache
@@ -312,8 +313,8 @@ hbl_cache_filters($expiration)
 ### Cache Invalidation
 
 #### Automatic Invalidation
-- Business creation/update/deletion
-- Service creation/update/deletion
+- Seller creation/update/deletion
+- Product creation/update/deletion
 - Lead creation/update/deletion
 - Settings changes
 
@@ -405,9 +406,9 @@ Comprehensive mobile-first responsive design with CSS custom properties, modern 
 
 ### Grid System
 
-#### Business Grid
+#### Seller Grid
 ```css
-.business-grid {
+.seller-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: var(--hbl-spacing-lg);
@@ -417,7 +418,7 @@ Comprehensive mobile-first responsive design with CSS custom properties, modern 
 #### Responsive Adjustments
 ```css
 @media screen and (max-width: 768px) {
-    .business-grid {
+    .seller-grid {
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: var(--hbl-spacing-sm);
     }
@@ -563,20 +564,20 @@ function hbl_add_skip_links() {
 
 ### ARIA Labels and Roles
 
-#### Business Listings
+#### Seller Listings
 ```php
 function hbl_add_aria_labels($html) {
     // Add main content landmark
     $html = str_replace(
-        '<div class="business-listing-container">',
-        '<div class="business-listing-container" role="main" id="hbl-main-content" aria-label="' . __('Business listing content', 'happy-business-listing') . '">',
+        '<div class="seller-listing-container">',
+        '<div class="seller-listing-container" role="main" id="hbl-main-content" aria-label="' . __('Seller listing content', 'happy-business-listing') . '">',
         $html
     );
     
-    // Add business card landmarks
+    // Add seller card landmarks
     $html = preg_replace(
-        '/<div class="business-card">/',
-        '<div class="business-card" role="article" aria-labelledby="business-title-{ID}">',
+        '/<div class="seller-card">/',
+        '<div class="seller-card" role="article" aria-labelledby="seller-title-{ID}">',
         $html
     );
 }
@@ -587,7 +588,7 @@ function hbl_add_aria_labels($html) {
 function hbl_add_search_aria_labels($html) {
     $html = str_replace(
         '<form',
-        '<form role="search" aria-label="' . __('Search businesses', 'happy-business-listing') . '" id="hbl-search"',
+        '<form role="search" aria-label="' . __('Search sellers', 'happy-business-listing') . '" id="hbl-search"',
         $html
     );
 }
@@ -598,14 +599,14 @@ function hbl_add_search_aria_labels($html) {
 #### Enhanced Navigation
 ```javascript
 document.addEventListener('DOMContentLoaded', function() {
-    // Add keyboard navigation to business cards
-    const businessCards = document.querySelectorAll('.business-card');
+    // Add keyboard navigation to seller cards
+    const sellerCards = document.querySelectorAll('.seller-card');
     
-    businessCards.forEach(function(card) {
+    sellerCards.forEach(function(card) {
         card.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                const link = card.querySelector('.business-link');
+                const link = card.querySelector('.seller-link');
                 if (link) {
                     link.click();
                 }
@@ -615,7 +616,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Make cards focusable
         card.setAttribute('tabindex', '0');
         card.setAttribute('role', 'button');
-        card.setAttribute('aria-label', card.querySelector('.business-title')?.textContent || 'Business card');
+        card.setAttribute('aria-label', card.querySelector('.seller-title')?.textContent || 'Seller card');
     });
 });
 ```
@@ -766,13 +767,13 @@ php tests/e2e/test-whatsapp-integration.php
 
 #### Endpoint Validation
 ```bash
-# Test business listing endpoint
-curl -X GET "https://yoursite.com/wp-json/hbl/v1/businesses"
+# Test seller listing endpoint
+curl -X GET "https://yoursite.com/wp-json/hbl/v1/sellers"
 
-# Test business creation
-curl -X POST "https://yoursite.com/wp-json/hbl/v1/businesses" \
+# Test seller creation
+curl -X POST "https://yoursite.com/wp-json/hbl/v1/sellers" \
   -H "Content-Type: application/json" \
-  -d '{"business_name": "Test Business"}'
+  -d '{"seller_name": "Test Seller"}'
 
 # Test search functionality
 curl -X GET "https://yoursite.com/wp-json/hbl/v1/search?q=test"
@@ -866,6 +867,20 @@ curl -X GET "https://yoursite.com/wp-json/hbl/v1/search?q=test"
 - **JAWS**: Full compatibility
 - **VoiceOver**: Full compatibility
 - **TalkBack**: Full compatibility
+
+---
+
+## 8. Implementation Plan & Next Steps
+
+Refer to the implementation plan in the documentation for the next set of priorities:
+- Hierarchical categories for sellers and products
+- Advanced filtering (location, ratings, etc.)
+- Sorting options (relevance, ratings, date)
+- Product detail page with seller card and enquiry form
+- Enhanced UI for similar products, city navigation, and related categories
+- Ongoing improvements to mobile responsiveness and accessibility
+
+These features are prioritized for the next development cycles. See the main documentation for details.
 
 ---
 

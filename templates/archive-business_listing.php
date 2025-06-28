@@ -5,31 +5,11 @@
  * @package Happy_Business_Listing
  */
 
-get_header();
+echo '<section class="hbl-archive-hero"><h1>'.esc_html__('Business Listings','happy-business-listing').'</h1></section>';
+echo do_shortcode('[business_listing_archive show_filters="true" posts_per_page="12" columns="3"]');
+
+// simple inline hero styles (can be moved to css)
+echo '<style>.hbl-archive-hero{max-width:1200px;margin:60px auto 30px;padding:0 20px;text-align:center}.hbl-archive-hero h1{font-size:2.8em;margin:0;color:#333}</style>';
+
+get_footer();
 ?>
-
-<div class="business-listing-archive">
-    <h1 class="archive-title"><?php _e('Business Listings', 'happy-business-listing'); ?></h1>
-    
-    <?php 
-    // Display filters
-    hbl_get_template_part('business-filters'); 
-    ?>
-    
-    <?php if (have_posts()) : ?>
-        <div class="business-grid">
-            <?php while (have_posts()) : the_post(); ?>
-                <?php hbl_get_template_part('business-card'); ?>
-            <?php endwhile; ?>
-        </div>
-        
-        <?php the_posts_pagination(array(
-            'prev_text' => '&larr; ' . __('Previous', 'happy-business-listing'),
-            'next_text' => __('Next', 'happy-business-listing') . ' &rarr;',
-        )); ?>
-    <?php else : ?>
-        <p class="no-results"><?php _e('No businesses found.', 'happy-business-listing'); ?></p>
-    <?php endif; ?>
-</div>
-
-<?php get_footer(); ?>

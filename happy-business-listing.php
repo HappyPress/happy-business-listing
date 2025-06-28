@@ -23,6 +23,7 @@ define('HBL_VERSION', '1.3.0');
 define('HBL_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('HBL_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('HBL_PLUGIN_BASENAME', plugin_basename(__FILE__));
+define('HBL_PLUGIN_FILE', __FILE__);
 
 /**
  * Main plugin class
@@ -187,7 +188,7 @@ class Happy_Business_Listing {
                 if ($page_id && !is_wp_error($page_id)) {
                     // Store page ID in options
                     add_option('hbl_' . $page_key . '_page_id', $page_id);
-                }
+            }
             } else {
                 // Store existing page ID
                 add_option('hbl_' . $page_key . '_page_id', $existing_page->ID);

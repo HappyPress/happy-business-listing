@@ -1,1 +1,8 @@
+# OS system files
 .DS_Store
+
+# Developer reference folder
+.references/
+
+# Exclude plugin documentation directory
+docs/
