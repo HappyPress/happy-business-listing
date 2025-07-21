@@ -1055,12 +1055,12 @@ Example:
 
 ```php
 // Customize the sub-site title
-add_filter('hbl_subsite_title', function($title, $post_id, $user_id) {
-    return 'Custom Title: ' . $title;
+add_filter('hbl_subsite_title', function(\$title, \$post_id, \$user_id) {
+    return 'Custom Title: ' . \$title;
 }, 10, 3);
 
 // Do something after a sub-site is created
-add_action('hbl_after_subsite_creation', function($site_id, $post_id, $user_id) {
+add_action('hbl_after_subsite_creation', function(\$site_id, \$post_id, \$user_id) {
     // Custom code here
 }, 10, 3);
 ```
