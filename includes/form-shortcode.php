@@ -1385,30 +1385,56 @@ function hbl_business_listing_archive_shortcode($atts) {
         $query_args['meta_query'] = $meta_query;
     }
 
-    // Filter by product/service keyword
+    // Filter by product/service category
     if (isset($_GET['product']) && !empty($_GET['product'])) {
-        $product_keyword = sanitize_text_field($_GET['product']);
-        $matching_products = get_posts(array(
-            'post_type' => 'service_product',
-            'posts_per_page' => -1,
-            's' => $product_keyword,
-            'fields' => 'ids',
-        ));
-        if ($matching_products) {
-            $business_ids = array();
-            foreach ($matching_products as $mpid) {
-                $bid = get_post_meta($mpid, 'business_id', true);
-                if ($bid) {
-                    $business_ids[] = intval($bid);
+        $product_category = sanitize_text_field($_GET['product']);
+        
+        // Map category values to search terms for service/product posts
+        $category_search_terms = array(
+            'consulting' => 'consulting',
+            'technology' => 'technology software IT digital',
+            'healthcare' => 'healthcare medical health',
+            'education' => 'education training learning',
+            'finance' => 'finance banking investment',
+            'retail' => 'retail shop store',
+            'manufacturing' => 'manufacturing production',
+            'real-estate' => 'real estate property',
+            'legal' => 'legal law attorney',
+            'marketing' => 'marketing advertising',
+            'automotive' => 'automotive car vehicle',
+            'food-beverage' => 'food beverage restaurant',
+            'travel' => 'travel tourism',
+            'entertainment' => 'entertainment media',
+            'other' => 'other'
+        );
+        
+        if (isset($category_search_terms[$product_category])) {
+            $search_terms = $category_search_terms[$product_category];
+            
+            // Search for service/product posts that match the category
+            $matching_products = get_posts(array(
+                'post_type' => 'service_product',
+                'posts_per_page' => -1,
+                's' => $search_terms,
+                'fields' => 'ids',
+            ));
+            
+            if ($matching_products) {
+                $business_ids = array();
+                foreach ($matching_products as $mpid) {
+                    $bid = get_post_meta($mpid, 'business_id', true);
+                    if ($bid) {
+                        $business_ids[] = intval($bid);
+                    }
                 }
-            }
-            if ($business_ids) {
-                $query_args['post__in'] = array_unique($business_ids);
+                if ($business_ids) {
+                    $query_args['post__in'] = array_unique($business_ids);
+                } else {
+                    $query_args['post__in'] = array(0); // no match
+                }
             } else {
-                $query_args['post__in'] = array(0); // no match
+                $query_args['post__in'] = array(0);
             }
-        } else {
-            $query_args['post__in'] = array(0);
         }
     }
 
@@ -1456,7 +1482,24 @@ function hbl_business_listing_archive_shortcode($atts) {
                         </div>
                         
                         <div class="filter-group">
-                            <input type="text" id="hbl-product-input" name="product" placeholder="<?php _e('Product / Service', 'happy-business-listing'); ?>" value="<?php echo esc_attr(isset($_GET['product']) ? $_GET['product'] : ''); ?>" autocomplete="off">
+                            <select name="product" id="hbl-product-select">
+                                <option value=""><?php _e('All Products / Services', 'happy-business-listing'); ?></option>
+                                <option value="consulting" <?php selected(isset($_GET['product']) ? $_GET['product'] : '', 'consulting'); ?>><?php _e('Consulting', 'happy-business-listing'); ?></option>
+                                <option value="technology" <?php selected(isset($_GET['product']) ? $_GET['product'] : '', 'technology'); ?>><?php _e('Technology', 'happy-business-listing'); ?></option>
+                                <option value="healthcare" <?php selected(isset($_GET['product']) ? $_GET['product'] : '', 'healthcare'); ?>><?php _e('Healthcare', 'happy-business-listing'); ?></option>
+                                <option value="education" <?php selected(isset($_GET['product']) ? $_GET['product'] : '', 'education'); ?>><?php _e('Education', 'happy-business-listing'); ?></option>
+                                <option value="finance" <?php selected(isset($_GET['product']) ? $_GET['product'] : '', 'finance'); ?>><?php _e('Finance', 'happy-business-listing'); ?></option>
+                                <option value="retail" <?php selected(isset($_GET['product']) ? $_GET['product'] : '', 'retail'); ?>><?php _e('Retail', 'happy-business-listing'); ?></option>
+                                <option value="manufacturing" <?php selected(isset($_GET['product']) ? $_GET['product'] : '', 'manufacturing'); ?>><?php _e('Manufacturing', 'happy-business-listing'); ?></option>
+                                <option value="real-estate" <?php selected(isset($_GET['product']) ? $_GET['product'] : '', 'real-estate'); ?>><?php _e('Real Estate', 'happy-business-listing'); ?></option>
+                                <option value="legal" <?php selected(isset($_GET['product']) ? $_GET['product'] : '', 'legal'); ?>><?php _e('Legal Services', 'happy-business-listing'); ?></option>
+                                <option value="marketing" <?php selected(isset($_GET['product']) ? $_GET['product'] : '', 'marketing'); ?>><?php _e('Marketing', 'happy-business-listing'); ?></option>
+                                <option value="automotive" <?php selected(isset($_GET['product']) ? $_GET['product'] : '', 'automotive'); ?>><?php _e('Automotive', 'happy-business-listing'); ?></option>
+                                <option value="food-beverage" <?php selected(isset($_GET['product']) ? $_GET['product'] : '', 'food-beverage'); ?>><?php _e('Food & Beverage', 'happy-business-listing'); ?></option>
+                                <option value="travel" <?php selected(isset($_GET['product']) ? $_GET['product'] : '', 'travel'); ?>><?php _e('Travel & Tourism', 'happy-business-listing'); ?></option>
+                                <option value="entertainment" <?php selected(isset($_GET['product']) ? $_GET['product'] : '', 'entertainment'); ?>><?php _e('Entertainment', 'happy-business-listing'); ?></option>
+                                <option value="other" <?php selected(isset($_GET['product']) ? $_GET['product'] : '', 'other'); ?>><?php _e('Other', 'happy-business-listing'); ?></option>
+                            </select>
                         </div>
                         
                         <div class="filter-group">
@@ -1562,9 +1605,29 @@ function hbl_business_listing_archive_shortcode($atts) {
     
     .filter-row {
         display: grid;
-        grid-template-columns: 2fr 1fr 1fr 1fr auto;
+        grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
         gap: 15px;
-        align-items: center;
+        align-items: end;
+    }
+    
+    @media (max-width: 1024px) {
+        .filter-row {
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .filter-actions {
+            grid-column: 1 / -1;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .filter-row {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .filter-actions {
+            grid-column: 1;
+        }
     }
     
     .filter-group input,
@@ -1574,6 +1637,24 @@ function hbl_business_listing_archive_shortcode($atts) {
         border: 1px solid #ddd;
         border-radius: 4px;
         font-size: 14px;
+        background-color: #fff;
+        transition: border-color 0.2s ease;
+    }
+    
+    .filter-group select {
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 12px center;
+        background-repeat: no-repeat;
+        background-size: 16px;
+        padding-right: 40px;
+    }
+    
+    .filter-group input:focus,
+    .filter-group select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
     }
     
     .filter-button,
@@ -1694,30 +1775,6 @@ function hbl_business_listing_archive_shortcode($atts) {
     .pagination-wrapper {
         text-align: center;
         margin-top: 30px;
-    }
-    
-    @media (max-width: 768px) {
-        .filter-row {
-            grid-template-columns: 1fr;
-            gap: 10px;
-        }
-        
-        .business-grid.columns-2,
-        .business-grid.columns-3,
-        .business-grid.columns-4 {
-            grid-template-columns: 1fr;
-        }
-        
-        .filter-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .filter-button,
-        .reset-button {
-            flex: 1;
-            margin: 0;
-        }
     }
     </style>
     
