@@ -119,6 +119,7 @@ function hbl_options_page() {
     // Get available tabs
     $tabs = apply_filters('hbl_settings_tabs', array(
         'general'  => __('General', 'happy-business-listing'),
+        'page'     => __('Page Management', 'happy-business-listing'),
         'whatsapp' => __('WhatsApp', 'happy-business-listing'),
         'logs'     => __('Logs', 'happy-business-listing')
     ));
@@ -137,6 +138,8 @@ function hbl_options_page() {
             // Display tab content
             if ($active_tab == 'general') {
                 hbl_display_general_tab();
+            } elseif ($active_tab == 'page') {
+                hbl_display_page_management_tab();
             } elseif ($active_tab == 'whatsapp') {
                 hbl_display_whatsapp_tab();
             } elseif ($active_tab == 'logs') {
@@ -221,6 +224,141 @@ function hbl_display_general_tab() {
             if ($this.is(':checked')) {
                 $other.prop('checked', false);
             }
+        });
+    });
+    </script>
+    <?php
+}
+
+/**
+ * Display page management tab content
+ */
+function hbl_display_page_management_tab() {
+    $page_status = hbl_get_directory_page_status();
+    ?>
+    <div class="hbl-settings-grid">
+        <div class="hbl-settings-section">
+            <h2><?php _e('Business Directory Page', 'happy-business-listing'); ?></h2>
+            
+            <div class="hbl-setting-item">
+                <h3><?php _e('Page Status', 'happy-business-listing'); ?></h3>
+                <div class="hbl-status-indicator <?php echo esc_attr($page_status['class']); ?>">
+                    <span class="dashicons <?php echo $page_status['class'] === 'success' ? 'dashicons-yes-alt' : ($page_status['class'] === 'warning' ? 'dashicons-warning' : 'dashicons-dismiss'); ?>"></span>
+                    <?php echo esc_html($page_status['message']); ?>
+                </div>
+                
+                <?php if (isset($page_status['page_url'])) : ?>
+                    <p>
+                        <a href="<?php echo esc_url($page_status['page_url']); ?>" class="button button-secondary" target="_blank">
+                            <?php _e('View Page', 'happy-business-listing'); ?>
+                        </a>
+                        <a href="<?php echo esc_url($page_status['edit_url']); ?>" class="button button-secondary">
+                            <?php _e('Edit Page', 'happy-business-listing'); ?>
+                        </a>
+                    </p>
+                <?php endif; ?>
+            </div>
+            
+            <div class="hbl-setting-item">
+                <h3><?php _e('Page Management', 'happy-business-listing'); ?></h3>
+                <p class="description">
+                    <?php _e('The business directory page is automatically created when the plugin is activated. This page uses Gutenberg blocks to display your business listings with filters.', 'happy-business-listing'); ?>
+                </p>
+                
+                <div class="hbl-page-actions">
+                    <button type="button" class="button button-primary" id="hbl-recreate-page">
+                        <?php _e('Recreate Directory Page', 'happy-business-listing'); ?>
+                    </button>
+                    <p class="description">
+                        <?php _e('This will create a new business directory page with default content. The old page will be deleted if it exists.', 'happy-business-listing'); ?>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="hbl-settings-section">
+            <h2><?php _e('Block-Based Directory', 'happy-business-listing'); ?></h2>
+            
+            <div class="hbl-setting-item">
+                <h3><?php _e('How It Works', 'happy-business-listing'); ?></h3>
+                <ul class="hbl-feature-list">
+                    <li>
+                        <span class="dashicons dashicons-yes-alt"></span>
+                        <?php _e('Uses a dedicated page instead of archive templates', 'happy-business-listing'); ?>
+                    </li>
+                    <li>
+                        <span class="dashicons dashicons-yes-alt"></span>
+                        <?php _e('Built with Gutenberg blocks for flexibility', 'happy-business-listing'); ?>
+                    </li>
+                    <li>
+                        <span class="dashicons dashicons-yes-alt"></span>
+                        <?php _e('Compatible with all themes, including block themes', 'happy-business-listing'); ?>
+                    </li>
+                    <li>
+                        <span class="dashicons dashicons-yes-alt"></span>
+                        <?php _e('Easy to customize through the page editor', 'happy-business-listing'); ?>
+                    </li>
+                    <li>
+                        <span class="dashicons dashicons-yes-alt"></span>
+                        <?php _e('SEO-friendly with proper page structure', 'happy-business-listing'); ?>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="hbl-setting-item">
+                <h3><?php _e('Available Blocks', 'happy-business-listing'); ?></h3>
+                <div class="hbl-blocks-grid">
+                    <div class="hbl-block-card">
+                        <span class="dashicons dashicons-store"></span>
+                        <h4><?php _e('Business Grid', 'happy-business-listing'); ?></h4>
+                        <p><?php _e('Display business listings in a customizable grid layout with filters and pagination.', 'happy-business-listing'); ?></p>
+                    </div>
+                    
+                    <?php if (function_exists('hsf_save_filter')) : ?>
+                    <div class="hbl-block-card">
+                        <span class="dashicons dashicons-search"></span>
+                        <h4><?php _e('Advanced Search', 'happy-business-listing'); ?></h4>
+                        <p><?php _e('Powerful search and filter interface with saved filter presets.', 'happy-business-listing'); ?></p>
+                    </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    jQuery(document).ready(function($) {
+        $('#hbl-recreate-page').on('click', function() {
+            var $button = $(this);
+            var originalText = $button.text();
+            
+            if (!confirm('<?php echo esc_js(__('Are you sure you want to recreate the directory page? This will delete the existing page if it exists.', 'happy-business-listing')); ?>')) {
+                return;
+            }
+            
+            $button.text('<?php echo esc_js(__('Creating...', 'happy-business-listing')); ?>').prop('disabled', true);
+            
+            $.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'hbl_recreate_directory_page',
+                    nonce: '<?php echo wp_create_nonce('hbl_recreate_page'); ?>'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.data.message);
+                        location.reload();
+                    } else {
+                        alert('Error: ' + response.data);
+                        $button.text(originalText).prop('disabled', false);
+                    }
+                },
+                error: function() {
+                    alert('<?php echo esc_js(__('An error occurred. Please try again.', 'happy-business-listing')); ?>');
+                    $button.text(originalText).prop('disabled', false);
+                }
+            });
         });
     });
     </script>
@@ -456,6 +594,123 @@ function hbl_settings_styles() {
         }
         .hbl-subsite-management {
             margin-top: 30px;
+        }
+        
+        /* Page Management Tab Styles */
+        .hbl-status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        .hbl-status-indicator.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        
+        .hbl-status-indicator.warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+        
+        .hbl-status-indicator.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        
+        .hbl-feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .hbl-feature-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .hbl-feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .hbl-feature-list .dashicons {
+            color: #16a085;
+            font-size: 16px;
+        }
+        
+        .hbl-blocks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .hbl-block-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .hbl-block-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #2271b1;
+        }
+        
+        .hbl-block-card .dashicons {
+            font-size: 32px;
+            color: #2271b1;
+            margin-bottom: 10px;
+        }
+        
+        .hbl-block-card h4 {
+            margin: 10px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .hbl-block-card p {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .hbl-page-actions {
+            margin-top: 15px;
+        }
+        
+        .hbl-page-actions .button {
+            margin-right: 10px;
+        }
+        
+        .hbl-setting-item h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .hbl-settings-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hbl-blocks-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
     <?php

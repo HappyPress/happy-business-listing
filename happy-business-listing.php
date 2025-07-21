@@ -113,9 +113,14 @@ class Happy_Business_Listing {
         require_once HBL_PLUGIN_DIR . 'includes/caching.php';
         require_once HBL_PLUGIN_DIR . 'includes/accessibility.php';
         
+        // Page-based directory system
+        require_once HBL_PLUGIN_DIR . 'includes/page-management.php';
+        require_once HBL_PLUGIN_DIR . 'includes/archive-redirect.php';
+        
         // Gutenberg blocks (only if WordPress version supports it)
         if (function_exists('register_block_type')) {
             require_once HBL_PLUGIN_DIR . 'includes/gutenberg-blocks.php';
+            require_once HBL_PLUGIN_DIR . 'includes/blocks/business-grid-block.php';
         }
     }
     
@@ -146,6 +151,9 @@ class Happy_Business_Listing {
         
         // Create essential pages
         $this->create_essential_pages();
+        
+        // Create business directory page
+        $this->create_directory_page();
         
         // Schedule post type registration for next init
         add_action('init', array($this, 'delayed_activation'), 1);
@@ -195,6 +203,16 @@ class Happy_Business_Listing {
                 // Store existing page ID
                 add_option('hbl_' . $page_key . '_page_id', $existing_page->ID);
             }
+        }
+    }
+    
+    /**
+     * Create business directory page
+     */
+    private function create_directory_page() {
+        // Only create if the function exists (page management is loaded)
+        if (function_exists('hbl_create_business_directory_page')) {
+            hbl_create_business_directory_page();
         }
     }
     
