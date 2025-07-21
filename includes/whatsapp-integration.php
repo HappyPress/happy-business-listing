@@ -731,6 +731,11 @@ function hbl_whatsapp_rate_limit_callback() {
  * @return string The sanitized API key
  */
 function hbl_sanitize_api_key($key) {
+    // Handle null values
+    if ($key === null) {
+        return '';
+    }
+    
     // Remove whitespace
     $key = trim($key);
     

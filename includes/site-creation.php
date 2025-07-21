@@ -599,17 +599,33 @@ function hbl_copy_template_content($template_id, $site_id, $post_id) {
 }
 
 /**
- * Register settings for sub-site creation
+ * Sanitize template content with null handling
+ *
+ * @param mixed $content The content to sanitize
+ * @return string The sanitized content
+ */
+function hbl_sanitize_template_content($content) {
+    // Handle null values
+    if ($content === null) {
+        return '';
+    }
+    
+    // Use wp_kses_post for sanitization
+    return wp_kses_post($content);
+}
+
+/**
+ * Register sub-site settings
  */
 function hbl_register_subsite_settings() {
     // Register settings
     register_setting('hbl_options_group', 'hbl_enable_subsite_creation', 'sanitize_text_field');
     register_setting('hbl_options_group', 'hbl_subsite_template', 'absint');
     register_setting('hbl_options_group', 'hbl_subsite_theme', 'sanitize_text_field');
-    register_setting('hbl_options_group', 'hbl_home_page_template', 'wp_kses_post');
-    register_setting('hbl_options_group', 'hbl_about_page_template', 'wp_kses_post');
-    register_setting('hbl_options_group', 'hbl_services_page_template', 'wp_kses_post');
-    register_setting('hbl_options_group', 'hbl_contact_page_template', 'wp_kses_post');
+    register_setting('hbl_options_group', 'hbl_home_page_template', 'hbl_sanitize_template_content');
+    register_setting('hbl_options_group', 'hbl_about_page_template', 'hbl_sanitize_template_content');
+    register_setting('hbl_options_group', 'hbl_services_page_template', 'hbl_sanitize_template_content');
+    register_setting('hbl_options_group', 'hbl_contact_page_template', 'hbl_sanitize_template_content');
     
     // Add settings section
     add_settings_section(

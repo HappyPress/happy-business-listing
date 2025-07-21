@@ -557,6 +557,11 @@ function hbl_add_archive_filters() {
         return;
     }
     
+    // If site is configured to use Happy Search & Filter advanced filters, skip rendering.
+    if ( get_option( 'hbl_use_hsf_filters' ) == '1' && function_exists( 'hsf_save_filter' ) ) {
+        return;
+    }
+    
     // Get filter values from query string
     $company_type = isset($_GET['company_type']) ? sanitize_text_field($_GET['company_type']) : '';
     $location = isset($_GET['location']) ? sanitize_text_field($_GET['location']) : '';

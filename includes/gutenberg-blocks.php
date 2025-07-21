@@ -564,6 +564,11 @@ add_action('init', 'hbl_register_advanced_filter_block');
  * @return string Block output
  */
 function hbl_render_advanced_filter_block($attributes) {
+    // If site is configured to use Happy Search & Filter advanced filters, skip rendering.
+    if ( get_option( 'hbl_use_hsf_filters' ) == '1' && function_exists( 'hsf_save_filter' ) ) {
+        return '';
+    }
+
     // Default attributes
     $attributes = wp_parse_args($attributes, array(
         'title' => __('Find Businesses', 'happy-business-listing'),
@@ -609,6 +614,9 @@ function hbl_render_advanced_filter_block($attributes) {
         'taxonomy' => 'business_category',
         'hide_empty' => true
     ));
+    if (is_wp_error($categories)) {
+        $categories = array();
+    }
     
     $company_types = hbl_get_meta_values('company_type', 'business_listing');
     $locations = hbl_get_meta_values('location', 'business_listing');
@@ -626,12 +634,12 @@ function hbl_render_advanced_filter_block($attributes) {
     }
     
     // Get tags if enabled
-    $tags = array();
-    if ($attributes['showTagsFilter']) {
-        $tags = get_terms(array(
-            'taxonomy' => 'business_tag',
-            'hide_empty' => true
-        ));
+    $tags = get_terms(array(
+        'taxonomy' => 'business_tag',
+        'hide_empty' => true
+    ));
+    if (is_wp_error($tags)) {
+        $tags = array();
     }
     
     // Get current filter values from URL
@@ -671,6 +679,11 @@ function hbl_render_advanced_filter_block($attributes) {
     }
     $filter_class .= ' hbl-filter-layout-' . $attributes['layout'];
     $filter_class .= ' hbl-filter-style-' . $attributes['filterStyle'];
+    
+    // If Happy Search & Filter plugin provides saved-filter logic, add wrapper class so its JS can attach.
+    if ( function_exists( 'hsf_save_filter' ) ) {
+        $filter_class .= ' hsf-filter-wrapper';
+    }
     
     // Add data attributes
     $data_attrs = '';
@@ -875,12 +888,12 @@ function hbl_render_advanced_filter_block($attributes) {
                 <button type="submit" class="hbl-submit-button"><?php _e('Search', 'happy-business-listing'); ?></button>
                 <button type="button" class="hbl-reset-button"><?php _e('Reset', 'happy-business-listing'); ?></button>
                 
-                <?php if ($attributes['enableSavedFilters']) : ?>
-                    <button type="button" class="hbl-save-filter-button"><?php _e('Save Filter', 'happy-business-listing'); ?></button>
+                <?php if ( $attributes['enableSavedFilters'] && ! function_exists( 'hsf_save_filter' ) ) : ?>
+                <button type="button" class="hbl-save-filter-button"><?php _e( 'Save Filter', 'happy-business-listing' ); ?></button>
                 <?php endif; ?>
             </div>
             
-            <?php if ($attributes['enableSavedFilters']) : ?>
+            <?php if ( $attributes['enableSavedFilters'] && ! function_exists( 'hsf_save_filter' ) ) : ?>
                 <div class="hbl-saved-filters">
                     <h4><?php _e('Saved Filters', 'happy-business-listing'); ?></h4>
                     <div class="hbl-saved-filters-list">

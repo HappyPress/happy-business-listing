@@ -1,0 +1,216 @@
+/* Business Grid Block Editor Styles */
+
+.hbl-business-grid-preview {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+.hbl-business-grid-preview h3 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.hbl-business-grid-preview p {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Inspector Controls Styling */
+.components-panel__body .components-base-control__label {
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.components-toggle-control .components-base-control__field {
+    margin-bottom: 16px;
+}
+
+/* Block Icon in Editor */
+.wp-block-happy-business-listing-business-grid {
+    position: relative;
+}
+
+/* Preview Grid Layout */
+.hbl-business-grid-preview .preview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.hbl-business-grid-preview .preview-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.hbl-business-grid-preview .preview-card .card-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.hbl-business-grid-preview .preview-card .card-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: #333;
+    margin: 0;
+}
+
+.hbl-business-grid-preview .preview-card .card-meta {
+    font-size: 10px;
+    color: #666;
+    margin: 4px 0 0 0;
+}
+
+/* Responsive preview adjustments */
+@media (max-width: 600px) {
+    .hbl-business-grid-preview .preview-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Block category icon */
+.block-editor-block-types-list__item[data-id="happy-business-listing/business-grid"] .block-editor-block-types-list__item-icon {
+    color: #2271b1;
+}
+
+/* Settings panel improvements */
+.components-panel__body-title {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.components-range-control__wrapper {
+    margin-bottom: 16px;
+}
+
+.components-select-control__input {
+    min-height: 36px;
+}
+
+/* Block preview enhancements */
+.hbl-business-grid-preview {
+    transition: all 0.2s ease;
+}
+
+.hbl-business-grid-preview:hover {
+    border-color: #2271b1;
+    box-shadow: 0 2px 8px rgba(34, 113, 177, 0.1);
+}
+
+/* Status indicators */
+.hbl-status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    background: #f0f0f0;
+    color: #666;
+}
+
+.hbl-status-indicator.active {
+    background: #e8f5e8;
+    color: #2d7d2d;
+}
+
+.hbl-status-indicator.inactive {
+    background: #ffeaea;
+    color: #d63638;
+}
+
+/* Block toolbar customizations */
+.block-editor-block-toolbar .components-toolbar-group {
+    border: none;
+}
+
+/* Inspector control spacing */
+.components-panel__body .components-base-control {
+    margin-bottom: 16px;
+}
+
+.components-panel__body .components-base-control:last-child {
+    margin-bottom: 0;
+}
+
+/* Custom toggle styles */
+.components-form-toggle.is-checked .components-form-toggle__track {
+    background-color: #2271b1;
+}
+
+/* Range control enhancements */
+.components-range-control__track {
+    background: #e0e0e0;
+}
+
+.components-range-control__thumb {
+    background: #2271b1;
+    border-color: #2271b1;
+}
+
+/* Select control improvements */
+.components-select-control__input:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+/* Panel body spacing */
+.components-panel__body + .components-panel__body {
+    border-top: 1px solid #e0e0e0;
+}
+
+/* Help text styling */
+.hbl-help-text {
+    font-size: 12px;
+    color: #757575;
+    font-style: italic;
+    margin-top: 4px;
+}
+
+/* Block variation indicators */
+.hbl-block-variation {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.hbl-block-variation:hover {
+    border-color: #2271b1;
+    background: #f6f7f7;
+}
+
+.hbl-block-variation.selected {
+    border-color: #2271b1;
+    background: #e8f4fd;
+}
+
+.hbl-block-variation .variation-icon {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+.hbl-block-variation .variation-info h4 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.hbl-block-variation .variation-info p {
+    margin: 2px 0 0 0;
+    font-size: 11px;
+    color: #666;
+} 
