@@ -1613,7 +1613,7 @@ function hbl_business_listing_archive_shortcode($atts) {
     @media (max-width: 1024px) {
         .filter-row {
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 15px;
         }
         .filter-actions {
             grid-column: 1 / -1;
@@ -1623,24 +1623,30 @@ function hbl_business_listing_archive_shortcode($atts) {
     @media (max-width: 768px) {
         .filter-row {
             grid-template-columns: 1fr;
-            gap: 10px;
+            gap: 15px;
         }
         .filter-actions {
             grid-column: 1;
         }
     }
     
+    /* Consistent styling for all filter elements */
     .filter-group input,
     .filter-group select {
         width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
+        padding: 12px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
         font-size: 14px;
-        background-color: #fff;
-        transition: border-color 0.2s ease;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: #ffffff;
+        transition: all 0.2s ease;
+        box-sizing: border-box;
+        color: #333333;
+        line-height: 1.4;
     }
     
+    /* Dropdown specific styling */
     .filter-group select {
         cursor: pointer;
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
@@ -1648,34 +1654,95 @@ function hbl_business_listing_archive_shortcode($atts) {
         background-repeat: no-repeat;
         background-size: 16px;
         padding-right: 40px;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
     }
     
+    /* Focus states for all elements */
     .filter-group input:focus,
     .filter-group select:focus {
         outline: none;
         border-color: #667eea;
-        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        background-color: #ffffff;
     }
     
+    /* Hover states */
+    .filter-group input:hover,
+    .filter-group select:hover {
+        border-color: #cbd5e0;
+    }
+    
+    /* Button container styling */
+    .filter-actions {
+        display: flex;
+        gap: 10px;
+        align-items: end;
+        justify-content: flex-end;
+    }
+    
+    /* Consistent button styling */
     .filter-button,
     .reset-button {
-        padding: 10px 20px;
-        border-radius: 4px;
+        padding: 12px 20px;
+        border-radius: 8px;
         text-decoration: none;
         font-size: 14px;
+        font-weight: 600;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         border: none;
         cursor: pointer;
+        transition: all 0.2s ease;
+        line-height: 1.4;
+        height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        box-sizing: border-box;
     }
     
+    /* Primary button styling */
     .filter-button {
-        background: #667eea;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
+        box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
     }
     
+    .filter-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .filter-button:active {
+        transform: translateY(0);
+    }
+    
+    /* Secondary button styling */
     .reset-button {
-        background: #6c757d;
-        color: white;
-        margin-left: 10px;
+        background: #f8f9fa;
+        color: #6c757d;
+        border: 2px solid #e2e8f0;
+    }
+    
+    .reset-button:hover {
+        background: #e9ecef;
+        border-color: #6c757d;
+        color: #495057;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .reset-button:active {
+        transform: translateY(0);
+    }
+    
+    /* Focus states for buttons */
+    .filter-button:focus,
+    .reset-button:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
     }
     
     .results-info {
